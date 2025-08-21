@@ -3,58 +3,52 @@ import { useCourse } from "@/app/contextApi/page";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const ViewInstructor = () => {
-  const { instructors, fetchAllInstructors, user } = useCourse();
+const ViewCourses = () => {
+  const { getData, getAllCourses, isVideo } = useCourse();
   const [visibleCount, setVisibleCount] = useState(15);
   const router = useRouter();
-  console.log(instructors.name);
+  console.log(getData.name);
   useEffect(() => {
-    if (!user) return; // 🔑 wait until user is loaded
-
-    if (user.role === "admin") {
-      fetchAllInstructors();
-    } else {
-      router.push("/"); // redirect non-admins
-    }
-  }, [user]);
+    getAllCourses(); // Fetch course data on mount
+  }, []);
 
   const handleLoadMore = () => {
     setVisibleCount((prev) => prev + 15);
   };
 
   // While checking user, show loader
-  if (!user) {
-    return <p className="text-gray-600">Loading...</p>;
-  }
+  // if (!user) {
+  //   return <p className="text-gray-600">Loading...</p>;
+  // }
 
   // Only render if admin
-  if (user.role !== "admin") {
-    return null; // avoid rendering anything before redirect
-  }
+  // if (user.role !== "admin") {
+  //   return null; // avoid rendering anything before redirect
+  // }
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Instructors</h1>
+      <h1 className="text-2xl font-bold mb-4">View Courses</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {instructors.slice(0, visibleCount).map((instructor) => (
+        {getData.slice(0, visibleCount).map((getData) => (
           <div
-            key={instructor.id}
+            key={getData.id}
             className="bg-white border rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col items-center"
           >
             <img
-              src={instructor.imageUrl || "/default-avatar.png"}
-              alt={instructor.name}
+              src={getData.fileUrl || "/default-avatar.png"}
+              alt={getData.courseTitle}
               className="w-24 h-24 rounded-full object-cover mb-3"
             />
-            <h3 className="text-lg font-semibold">{instructor.name}</h3>
+            <h3 className="text-lg font-semibold">{getData.courseTitle}</h3>
             <p className="text-gray-600 text-sm my-1 text-center">
-              {instructor.expertIn}
+              {getData.category}
             </p>
           </div>
         ))}
       </div>
 
-      {visibleCount < instructors.length && (
+      {visibleCount < getData.length && (
         <div className="flex justify-center mt-6">
           <button
             onClick={handleLoadMore}
@@ -68,4 +62,4 @@ const ViewInstructor = () => {
   );
 };
 
-export default ViewInstructor;
+export default ViewCourses;

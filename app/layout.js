@@ -31,7 +31,9 @@ const navList = [
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} bg-amber-100`}
+      >
         <CourseProvider>
           <Navbar navList={navList} />
           <main>{children}</main>

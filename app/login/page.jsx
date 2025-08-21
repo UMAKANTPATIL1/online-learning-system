@@ -1,54 +1,19 @@
 "use client";
 import Modal from "@/component/modal/page";
-import axios from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { useCourse } from "../contextApi/page";
 
 const Login = ({ setShowModal }) => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
-  const [error, setError] = useState(null);
-  const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleLogin = async (e) => {
+  // get login and error from context
+  const { login, error } = useCourse();
+
+  const handleLogin = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(
-        "http://localhost:8082/api/auth/login",
-        {
-          email: credentials.email,
-          password: credentials.password,
-        },
-        {
-          withCredentials: true, // Needed if you're storing token in cookie
-        }
-      );
-
-      if (response.status === 200) {
-        const { token, role } = response.data;
-        console.log("role", role);
-        // Store in localStorage if you're not using HttpOnly cookies
-        // localStorage.setItem("token", token);
-        // localStorage.setItem("role", role.toLowerCase());
-
-        setShowModal(false); // Close modal
-
-        // Redirect based on role
-        const lowerRole = role.toLowerCase();
-        router.push("/");
-        if (lowerRole === "admin") {
-          router.push("admin/dashboard");
-          // } else if (lowerRole === "instructor") {
-          //   router.push("/instructor");
-          // } else {
-          //   router.push("/student");
-          // }
-        }
-      }
-    } catch (error) {
-      console.error("Login failed", error);
-      setError("Invalid credentials. Try again.");
-    }
+    login(credentials, setShowModal); // call context login
   };
 
   const handleOnChange = (e) => {
@@ -59,7 +24,6 @@ const Login = ({ setShowModal }) => {
     }));
   };
 
-  // Optional: close modal if user clicks "X"
   useEffect(() => {
     if (!searchParams.get("showLogin")) {
       setShowModal(false);
