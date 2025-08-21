@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -9,7 +9,16 @@ export const CourseProvider = ({ children }) => {
   const [getData, setGetData] = useState([]);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const [instructors, setInstructors] = useState([]);
   const router = useRouter();
+
+  // 📌 Restore user from localStorage on refresh
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
 
   // 📌 Fetch all courses
   const getAllCourses = async () => {
@@ -23,11 +32,7 @@ export const CourseProvider = ({ children }) => {
     }
   };
 
-  // inside CourseProvider
-  const [instructors, setInstructors] = useState([]);
-
-  // const [instructors, setInstructors] = useState([]);
-
+  // 📌 Fetch all instructors
   const fetchAllInstructors = async () => {
     try {
       const response = await axios.get(
@@ -35,7 +40,6 @@ export const CourseProvider = ({ children }) => {
         { withCredentials: true }
       );
       setInstructors(response.data);
-      console.log(instructors); // 👈 update state
       return response.data;
     } catch (error) {
       console.error("Error fetching instructors:", error);
@@ -65,13 +69,15 @@ export const CourseProvider = ({ children }) => {
       if (response.status === 200) {
         const { role } = response.data;
         const lowerRole = role.toLowerCase(); // ✅ normalize role
-        setUser({ role: lowerRole });
+        const userData = { role: lowerRole };
+
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData)); // ✅ persist user
         setError(null);
 
         if (setShowModal) setShowModal(false);
 
         // Redirect
-        router.push("/");
         if (lowerRole === "admin") {
           router.push("/admin/dashboard");
         } else if (lowerRole === "instructor") {
@@ -86,6 +92,14 @@ export const CourseProvider = ({ children }) => {
     }
   };
 
+  // 📌 Logout handler
+  const logout = () => {
+    setUser(null);
+    setInstructors([]);
+    localStorage.removeItem("user"); // ✅ clear user on logout
+    router.push("/");
+  };
+
   return (
     <CourseContext.Provider
       value={{
@@ -94,6 +108,7 @@ export const CourseProvider = ({ children }) => {
         isVideo,
         user,
         login,
+        logout,
         error,
         fetchAllInstructors,
         instructors,

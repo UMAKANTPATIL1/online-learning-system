@@ -2,53 +2,77 @@
 import { useCourse } from "@/app/contextApi/page";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import CourseModal from "./viewCourseModal/page";
 
 const ViewCourses = () => {
-  const { getData, getAllCourses, isVideo } = useCourse();
+  const { getData, getAllCourses } = useCourse();
   const [visibleCount, setVisibleCount] = useState(15);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [loading, setLoading] = useState(true); // track loading state
   const router = useRouter();
-  console.log(getData.name);
+
   useEffect(() => {
-    getAllCourses(); // Fetch course data on mount
+    const fetchData = async () => {
+      setLoading(true);
+      await getAllCourses(); // Fetch course data
+      setLoading(false);
+    };
+    fetchData();
   }, []);
 
   const handleLoadMore = () => {
     setVisibleCount((prev) => prev + 15);
   };
 
-  // While checking user, show loader
-  // if (!user) {
-  //   return <p className="text-gray-600">Loading...</p>;
-  // }
-
-  // Only render if admin
-  // if (user.role !== "admin") {
-  //   return null; // avoid rendering anything before redirect
-  // }
+  // 🔹 Skeleton placeholder card
+  const SkeletonCard = () => (
+    <div className="bg-white border rounded-xl shadow p-4 flex flex-col items-center animate-pulse">
+      <div className="w-24 h-24 rounded-full bg-gray-300 mb-3"></div>
+      <div className="h-4 w-32 bg-gray-300 rounded mb-2"></div>
+      <div className="h-3 w-20 bg-gray-200 rounded"></div>
+    </div>
+  );
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">View Courses</h1>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {getData.slice(0, visibleCount).map((getData) => (
-          <div
-            key={getData.id}
-            className="bg-white border rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col items-center"
-          >
-            <img
-              src={getData.fileUrl || "/default-avatar.png"}
-              alt={getData.courseTitle}
-              className="w-24 h-24 rounded-full object-cover mb-3"
-            />
-            <h3 className="text-lg font-semibold">{getData.courseTitle}</h3>
-            <p className="text-gray-600 text-sm my-1 text-center">
-              {getData.category}
-            </p>
-          </div>
-        ))}
+        {loading
+          ? // Show skeletons while loading
+            Array.from({ length: visibleCount }).map((_, index) => (
+              <SkeletonCard key={index} />
+            ))
+          : // Show actual course cards
+            getData.slice(0, visibleCount).map((course) => (
+              <div
+                key={course.id}
+                className="bg-white border rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col items-center cursor-pointer"
+                onClick={() => setSelectedCourse(course)}
+              >
+                <img
+                  src={course.fileUrl || "/default-avatar.png"}
+                  alt={course.courseTitle}
+                  className="w-24 h-24 rounded-full object-cover mb-3"
+                />
+                <h3 className="text-lg font-semibold">{course.courseTitle}</h3>
+                <p className="text-gray-600 text-sm my-1 text-center">
+                  {course.category}
+                </p>
+              </div>
+            ))}
       </div>
 
-      {visibleCount < getData.length && (
+      {/* Modal */}
+      {selectedCourse && (
+        <CourseModal
+          course={selectedCourse}
+          onClose={() => setSelectedCourse(null)}
+        />
+      )}
+
+      {/* Load More */}
+      {!loading && visibleCount < getData.length && (
         <div className="flex justify-center mt-6">
           <button
             onClick={handleLoadMore}

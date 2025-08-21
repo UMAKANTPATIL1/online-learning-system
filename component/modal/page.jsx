@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-const Modal = ({ children, onClose }) => {
+const Modal = ({ children, onClose, modalBgColor }) => {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const Modal = ({ children, onClose }) => {
       onClick={handleClose}
     >
       <div
-        className={`bg-white p-6 rounded-lg w-full max-w-md relative shadow-lg transform transition-all duration-300 ${
+        className={`${modalBgColor} p-6 rounded-lg w-full max-w-md relative shadow-lg transform transition-all duration-300 ${
           show ? "opacity-100 scale-100" : "opacity-0 scale-95"
         }`}
         onClick={(e) => e.stopPropagation()}

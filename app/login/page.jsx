@@ -31,7 +31,7 @@ const Login = ({ setShowModal }) => {
   }, []);
 
   return (
-    <Modal onClose={() => setShowModal(false)}>
+    <Modal onClose={() => setShowModal(false)} modalBgColor="bg-white">
       <h2 className="text-xl font-bold mb-4">Welcome Back</h2>
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
