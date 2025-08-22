@@ -92,6 +92,19 @@ export const CourseProvider = ({ children }) => {
     }
   };
 
+  const pendingCourses = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8082/api/auth/pending-courses",
+        { withCredentials: true }
+      );
+      console.log("Pending courses fetched:", response.data);
+      setGetData(response.data);
+    } catch (error) {
+      console.error("Error fetching pending courses:", error);
+    }
+  };
+
   // 📌 Logout handler
   const logout = () => {
     setUser(null);
@@ -112,6 +125,7 @@ export const CourseProvider = ({ children }) => {
         error,
         fetchAllInstructors,
         instructors,
+        pendingCourses,
       }}
     >
       {children}

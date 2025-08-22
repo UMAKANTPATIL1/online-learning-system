@@ -1,6 +1,7 @@
 "use client";
 
 import Navbar from "@/component/navbar/page";
+import PendingCourse from "@/component/pendingCourse/page";
 import Sidebar from "@/component/sidebar/page";
 import ViewCourses from "@/component/viewCourse/page";
 import ViewInstructor from "@/component/viewInstructors/page";
@@ -19,7 +20,7 @@ const Dashboard = () => {
     { label: "📚 View Courses" },
     { label: "➕ Add Course" },
     { label: "📋 View Enrollments" },
-    { label: "⭐ View Reviews" },
+    { label: "⭐ Pending Courses" },
     { label: "💰 View Earnings" },
   ];
 
@@ -32,7 +33,7 @@ const Dashboard = () => {
     <ViewCourses key={"view-courses"} />,
     <div key="add-course">➕ Add Course form goes here</div>,
     <div key="view-enrollments">📋 Enrollments list goes here</div>,
-    <div key="view-reviews">⭐ Reviews list goes here</div>,
+    <PendingCourse key={"pending-courses"} />,
     <div key="view-earnings">💰 Earnings page goes here</div>,
   ];
 
