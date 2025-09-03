@@ -109,11 +109,11 @@ const PendingCourse = () => {
                       ₹{course.coursePrice}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <div className="flex justify-center gap-3">
-                        <button className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                      <div className="flex justify-center gap-3  ">
+                        <button className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition cursor-pointer">
                           Approve
                         </button>
-                        <button className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                        <button className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition cursor-pointer">
                           Reject
                         </button>
                       </div>

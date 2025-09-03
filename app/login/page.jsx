@@ -71,6 +71,7 @@ const Login = ({ setShowModal }) => {
         <button
           type="submit"
           className="w-full bg-blue-700 text-white py-2 cursor-pointer rounded hover:bg-blue-800"
+          onClick={() => login(credentials, setShowModal)}
         >
           Login
         </button>

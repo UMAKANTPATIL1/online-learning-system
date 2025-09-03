@@ -105,6 +105,22 @@ export const CourseProvider = ({ children }) => {
     }
   };
 
+  const viewEnrolledStudents = async (courseId) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8082/api/auth/get-all-enrolled-user"
+        // { withCredentials: true }
+      );
+      console.log("enrolled students:", response.data);
+      setGetData(response.data);
+
+      // return response.data;
+    } catch (error) {
+      console.error("Error fetching enrolled students:", error);
+      return [];
+    }
+  };
+
   // 📌 Logout handler
   const logout = () => {
     setUser(null);
@@ -126,6 +142,7 @@ export const CourseProvider = ({ children }) => {
         fetchAllInstructors,
         instructors,
         pendingCourses,
+        viewEnrolledStudents,
       }}
     >
       {children}

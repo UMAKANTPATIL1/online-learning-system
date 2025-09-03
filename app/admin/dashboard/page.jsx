@@ -4,6 +4,7 @@ import Navbar from "@/component/navbar/page";
 import PendingCourse from "@/component/pendingCourse/page";
 import Sidebar from "@/component/sidebar/page";
 import ViewCourses from "@/component/viewCourse/page";
+import ViewEnrolledStudents from "@/component/viewEnrolledStudents/page";
 import ViewInstructor from "@/component/viewInstructors/page";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
@@ -32,7 +33,7 @@ const Dashboard = () => {
     <div key="view-students">👨‍🎓 Student list goes here</div>,
     <ViewCourses key={"view-courses"} />,
     <div key="add-course">➕ Add Course form goes here</div>,
-    <div key="view-enrollments">📋 Enrollments list goes here</div>,
+    <ViewEnrolledStudents key={"view-enrollments"} />,
     <PendingCourse key={"pending-courses"} />,
     <div key="view-earnings">💰 Earnings page goes here</div>,
   ];
