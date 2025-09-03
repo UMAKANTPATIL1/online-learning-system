@@ -3,7 +3,7 @@ import { useCourse } from "@/app/contextApi/page";
 import React, { useEffect, useState } from "react";
 
 const PendingCourse = () => {
-  const { getData, pendingCourses } = useCourse();
+  const { getData, pendingCourses, approveCourse, rejectCourse } = useCourse();
   const [loading, setLoading] = useState(true);
 
   // Pagination states
@@ -110,10 +110,20 @@ const PendingCourse = () => {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex justify-center gap-3  ">
-                        <button className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition cursor-pointer">
+                        <button
+                          className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition cursor-pointer"
+                          onClick={() =>
+                            approveCourse(course.id, "admin@gmail.com")
+                          }
+                        >
                           Approve
                         </button>
-                        <button className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition cursor-pointer">
+                        <button
+                          className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition cursor-pointer"
+                          onClick={() =>
+                            rejectCourse(course.id, "admin@gmail.com")
+                          }
+                        >
                           Reject
                         </button>
                       </div>

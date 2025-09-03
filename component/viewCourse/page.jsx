@@ -11,6 +11,10 @@ const ViewCourses = () => {
   const [loading, setLoading] = useState(true); // track loading state
   const router = useRouter();
 
+  const approvedCourses = getData.filter(
+    (course) => course.courseStatus === "Approved".toUpperCase()
+  );
+  console.log("Approved Courses:", approvedCourses);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -19,6 +23,8 @@ const ViewCourses = () => {
     };
     fetchData();
   }, []);
+
+  // console.log("View Courses Data:", getData);
 
   const handleLoadMore = () => {
     setVisibleCount((prev) => prev + 15);
@@ -44,7 +50,7 @@ const ViewCourses = () => {
               <SkeletonCard key={index} />
             ))
           : // Show actual course cards
-            getData.slice(0, visibleCount).map((course) => (
+            approvedCourses.slice(0, visibleCount).map((course) => (
               <div
                 key={course.id}
                 className="bg-white border rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col items-center cursor-pointer"
@@ -72,7 +78,7 @@ const ViewCourses = () => {
       )}
 
       {/* Load More */}
-      {!loading && visibleCount < getData.length && (
+      {!loading && visibleCount < approvedCourses.length && (
         <div className="flex justify-center mt-6">
           <button
             onClick={handleLoadMore}

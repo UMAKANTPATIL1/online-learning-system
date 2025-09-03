@@ -121,6 +121,36 @@ export const CourseProvider = ({ children }) => {
     }
   };
 
+  const approveCourse = async (courseId, adminEmail) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8082/api/auth/approve-course`,
+        { courseId, adminEmail },
+        { withCredentials: true }
+      );
+      console.log("Course approved:", response.data);
+      // Optionally refresh the course list
+      await pendingCourses();
+    } catch (error) {
+      console.error("Error approving course:", error);
+    }
+  };
+
+  const rejectCourse = async (courseId, adminEmail) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8082/api/auth/reject-course`,
+        { courseId, adminEmail },
+        { withCredentials: true }
+      );
+      console.log("Course rejected:", response.data);
+      // Optionally refresh the course list
+      await pendingCourses();
+    } catch (error) {
+      console.error("Error rejecting course:", error);
+    }
+  };
+
   // 📌 Logout handler
   const logout = () => {
     setUser(null);
@@ -143,6 +173,8 @@ export const CourseProvider = ({ children }) => {
         instructors,
         pendingCourses,
         viewEnrolledStudents,
+        approveCourse,
+        rejectCourse,
       }}
     >
       {children}
