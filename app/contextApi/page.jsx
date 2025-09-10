@@ -76,15 +76,8 @@ export const CourseProvider = ({ children }) => {
         setError(null);
 
         if (setShowModal) setShowModal(false);
-
+        router.push(`/dashboard`);
         // Redirect
-        if (lowerRole === "admin") {
-          router.push("/admin/dashboard");
-        } else if (lowerRole === "instructor") {
-          router.push("/instructor");
-        } else {
-          router.push("/student");
-        }
       }
     } catch (error) {
       console.error("Login failed", error);
@@ -151,6 +144,20 @@ export const CourseProvider = ({ children }) => {
     }
   };
 
+  const viewStudents = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8082/api/auth/get-all-students",
+        { withCredentials: true }
+      );
+      setGetData(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      return [];
+    }
+  };
+
   // 📌 Logout handler
   const logout = () => {
     setUser(null);
@@ -175,6 +182,7 @@ export const CourseProvider = ({ children }) => {
         viewEnrolledStudents,
         approveCourse,
         rejectCourse,
+        viewStudents,
       }}
     >
       {children}
