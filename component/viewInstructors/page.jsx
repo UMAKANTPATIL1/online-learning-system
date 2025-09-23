@@ -11,6 +11,7 @@ const ViewInstructor = () => {
   const [selectedInstructor, setSelectedInstructor] = useState(null);
   const router = useRouter();
 
+  console.log("User", user);
   useEffect(() => {
     if (user === null) {
       return; // wait until context sets user

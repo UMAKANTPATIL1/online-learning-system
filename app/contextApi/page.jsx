@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const CourseContext = createContext();
 
@@ -15,6 +16,7 @@ export const CourseProvider = ({ children }) => {
   // 📌 Restore user from localStorage on refresh
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
+    console.log("Saved user from localStorage:", savedUser);
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
@@ -39,6 +41,7 @@ export const CourseProvider = ({ children }) => {
         "http://localhost:8082/api/auth/get-all-instructor",
         { withCredentials: true }
       );
+      console.log(response.data);
       setInstructors(response.data);
       return response.data;
     } catch (error) {
@@ -54,7 +57,7 @@ export const CourseProvider = ({ children }) => {
     return videoExtensions.some((ext) => url.toLowerCase().endsWith(ext));
   };
 
-  // 📌 Login handler
+  //  Login handler
   const login = async (credentials, setShowModal) => {
     try {
       const response = await axios.post(
@@ -63,24 +66,42 @@ export const CourseProvider = ({ children }) => {
           email: credentials.email,
           password: credentials.password,
         },
-        { withCredentials: true }
+        { withCredentials: true } // important for cookies
       );
 
       if (response.status === 200) {
-        const { role } = response.data;
-        const lowerRole = role.toLowerCase(); // ✅ normalize role
-        const userData = { role: lowerRole };
+        // destructure safely
+        const { token, role } = response.data;
 
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData)); // ✅ persist user
+        if (!token) {
+          throw new Error("No token received from backend");
+        }
+        const normalizedRole = role?.toLowerCase() || "guest";
+        const newUser = {
+          email: credentials.email,
+          role: normalizedRole,
+          token,
+        };
+        toast.success(`${normalizedRole}Login successful!`);
+
+        //  save in state + localStorage
+        console.log("user data from login:", newUser);
+        setUser(newUser);
+        localStorage.setItem("token", token);
+        localStorage.setItem("role", normalizedRole);
+
         setError(null);
 
+        console.log("role:", normalizedRole);
+        console.log("token:", token);
+
         if (setShowModal) setShowModal(false);
-        router.push(`/dashboard`);
-        // Redirect
+
+        //  navigate after state update
+        router.push("/dashboard");
       }
     } catch (error) {
-      console.error("Login failed", error);
+      console.error("Login failed:", error);
       setError("Invalid credentials. Try again.");
     }
   };
@@ -159,11 +180,32 @@ export const CourseProvider = ({ children }) => {
   };
 
   // 📌 Logout handler
-  const logout = () => {
-    setUser(null);
-    setInstructors([]);
-    localStorage.removeItem("user"); // ✅ clear user on logout
-    router.push("/");
+  const logout = async () => {
+    try {
+      // Call backend logout
+      await axios.post(
+        "http://localhost:8082/api/auth/logout",
+        {},
+        { withCredentials: true }
+      );
+
+      // Clear frontend state
+      setUser(null);
+      setInstructors([]);
+
+      // Extra cleanup (in case)
+      console.log("get token in context:", localStorage.getItem("token"));
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      Cookies.remove("token", { path: "/" });
+      Cookies.remove("role", { path: "/" });
+      Cookies.remove("name", { path: "/" });
+
+      // Redirect
+      router.push("/");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
   return (

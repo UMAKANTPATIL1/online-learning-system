@@ -1,5 +1,6 @@
 "use client";
 
+import CreateCourses from "@/component/AddCourses/createCourse";
 import Navbar from "@/component/navbar/page";
 import PendingCourse from "@/component/pendingCourse/page";
 import Sidebar from "@/component/sidebar/page";
@@ -13,11 +14,15 @@ import React, { useEffect, useState } from "react";
 const Dashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+
   const token = Cookies.get("token");
 
-  const role = Cookies.get("role").toLowerCase();
+  const role = Cookies.get("role")?.toLowerCase();
 
-  console.log("User role from cookie:", role);
+  // const token = localStorage.getItem("token");
+  // const role = localStorage.getItem("role")?.toLowerCase();
+
+  // console.log("User role and token from localstorage:", role, token);
   // Navigation items
 
   const adminNavList = [
@@ -57,7 +62,7 @@ const Dashboard = () => {
 
   const instructorComponents = [
     <div key="overview">🏠 This is the Overview page</div>,
-    <div key="add-course">➕ Add Course form goes here</div>,
+    <CreateCourses key={"create-course"} />,
     <ViewStudents key={"view-students"} />,
     <ViewCourses key={"view-courses"} />,
     <ViewEnrolledStudents key={"view-enrollments"} />,
@@ -65,17 +70,48 @@ const Dashboard = () => {
     <div key="view-earnings">💰 Earnings page goes here</div>,
   ];
 
+  const studentNavList = [
+    { label: "🏠 Overview" },
+    { label: "📚 My Courses" },
+    { label: "🔍 Browse Courses" },
+    { label: "📋 My Enrollments" },
+    { label: "💰 My Payments" },
+    { label: "⚙️ Settings" },
+  ];
+
+  const studentComponents = [
+    <div key="overview">🏠 This is the Overview page</div>,
+    <div key="my-courses">📚 List of my courses goes here</div>,
+    <div key="browse-courses">🔍 Browse available courses here</div>,
+    <div key="my-enrollments">📋 My enrollments details go here</div>,
+    <div key="my-payments">💰 My payment history goes here</div>,
+    <div key="settings">⚙️ User settings form goes here</div>,
+  ];
+
   useEffect(() => {
     const token = Cookies.get("token");
-    const role = Cookies.get("role").toLowerCase();
+    const role = Cookies.get("role")?.toLowerCase();
     setIsAuthenticated(!!token);
   }, []);
+  console.log("getrole", role);
 
   // or "admin"
-  const navList = role === "instructor" ? instructorNavList : adminNavList;
+  // const navList = role === "instructor" ? instructorNavList : adminNavList;
 
+  // const componentsToRender =
+  //   role === "instructor" ? instructorComponents : adminComponents ;
+  const navList =
+    role === "admin"
+      ? adminNavList
+      : role === "instructor"
+      ? instructorNavList
+      : studentNavList;
   const componentsToRender =
-    role === "instructor" ? instructorComponents : adminComponents;
+    role === "admin"
+      ? adminComponents
+      : role === "instructor"
+      ? instructorComponents
+      : studentComponents;
 
   return (
     <div className="flex h-screen overflow-hidden">

@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { CourseProvider } from "./contextApi/page";
 import Navbar from "@/component/navbar/page";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({ children }) {
       >
         <CourseProvider>
           <Navbar navList={navList} />
+          <Toaster className="swiper-centered" />
           <main>{children}</main>
         </CourseProvider>
       </body>

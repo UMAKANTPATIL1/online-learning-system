@@ -26,7 +26,7 @@ const Navbar = ({ navList }) => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = Cookies.get("token");
+      const token = localStorage.getItem("token");
       const name = Cookies.get("name");
       const image = Cookies.get("image");
 
@@ -54,6 +54,8 @@ const Navbar = ({ navList }) => {
       Cookies.remove("name", { path: "/" });
       Cookies.remove("role", { path: "/" });
       Cookies.remove("image", { path: "/" });
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
 
       setIsAuthenticated(false);
       setUser({ name: "", image: "" });
