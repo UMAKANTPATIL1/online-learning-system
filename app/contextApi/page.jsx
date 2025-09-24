@@ -58,15 +58,17 @@ export const CourseProvider = ({ children }) => {
   };
 
   //  Login handler
+
   const login = async (credentials, setShowModal) => {
     try {
+      console.log(`localhost here: ${process.env.NEXT_PUBLIC_API_URL}`);
       const response = await axios.post(
-        "http://localhost:8082/api/auth/login",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
         {
           email: credentials.email,
           password: credentials.password,
         },
-        { withCredentials: true } // important for cookies
+        { withCredentials: "include" } // important for cookies
       );
 
       if (response.status === 200) {
