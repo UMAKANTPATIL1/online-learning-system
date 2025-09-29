@@ -12,6 +12,7 @@ export function middleware(request) {
   // Allow access to root and static/public files (like favicon, images, etc.)
   const isPublicPath =
     pathname === "/" ||
+    pathname === "/register" ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/images") ||
     pathname.startsWith("/favicon.ico") ||

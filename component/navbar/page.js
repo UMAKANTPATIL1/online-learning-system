@@ -1,6 +1,7 @@
 "use client";
 
 import Login from "@/app/login/page";
+import Register from "@/app/register/page";
 import Cookies from "js-cookie";
 import { Sidebar } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -83,11 +84,11 @@ const Navbar = ({ navList }) => {
                   {isLoginLink ? (
                     isAuthenticated ? (
                       <div className="flex items-center space-x-3">
-                        <img
-                          src={user.image || "/default-avatar.png"}
+                        {/* <img
+                          src={user.image || "/default-profile.png"}
                           alt="Profile"
                           className="w-8 h-8 rounded-full object-cover border border-gray-300"
-                        />
+                        /> */}
                         <span className="text-sm">{user.name}</span>
                         <button
                           onClick={handleLogoutClick}
@@ -119,6 +120,7 @@ const Navbar = ({ navList }) => {
         </div>
       </div>
       {showModal && <Login setShowModal={setShowModal} />}
+      {/* {showModal && <Register setShowModal={setShowModal} />} */}
     </div>
   );
 };

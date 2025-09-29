@@ -26,7 +26,7 @@ export const CourseProvider = ({ children }) => {
   const getAllCourses = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8082/api/auth/get-courses"
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-courses`
       );
       setGetData(response.data);
     } catch (error) {
@@ -68,12 +68,12 @@ export const CourseProvider = ({ children }) => {
           email: credentials.email,
           password: credentials.password,
         },
-        { withCredentials: "include" } // important for cookies
+        { withCredentials: true } // important for cookies
       );
 
       if (response.status === 200) {
         // destructure safely
-        const { token, role } = response.data;
+        const { token, role, userId } = response.data;
 
         if (!token) {
           throw new Error("No token received from backend");
@@ -83,6 +83,7 @@ export const CourseProvider = ({ children }) => {
           email: credentials.email,
           role: normalizedRole,
           token,
+          id: userId,
         };
         toast.success(`${normalizedRole}Login successful!`);
 
@@ -91,6 +92,7 @@ export const CourseProvider = ({ children }) => {
         setUser(newUser);
         localStorage.setItem("token", token);
         localStorage.setItem("role", normalizedRole);
+        localStorage.setItem("id", userId);
 
         setError(null);
 
@@ -210,6 +212,20 @@ export const CourseProvider = ({ children }) => {
     }
   };
 
+  const MyEnrolledCourses = async (userId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8082/api/auth/get-own-courses/${userId}`,
+        { withCredentials: true }
+      );
+      console.log("enrolled courses user id ", userId);
+      console.log("Enrolled courses fetched:", response.data);
+      console.log("User info ", response.data);
+      setGetData(response.data);
+    } catch (error) {
+      console.error("Error fetching enrolled courses:", error);
+    }
+  };
   return (
     <CourseContext.Provider
       value={{
@@ -227,6 +243,7 @@ export const CourseProvider = ({ children }) => {
         approveCourse,
         rejectCourse,
         viewStudents,
+        MyEnrolledCourses,
       }}
     >
       {children}

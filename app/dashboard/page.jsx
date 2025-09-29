@@ -1,6 +1,8 @@
 "use client";
 
 import CreateCourses from "@/component/AddCourses/createCourse";
+import MyOwnEnrolledCourses from "@/component/enrolledOwnCourses/page";
+import HomePage from "@/component/HomePage/page";
 import Navbar from "@/component/navbar/page";
 import PendingCourse from "@/component/pendingCourse/page";
 import Sidebar from "@/component/sidebar/page";
@@ -26,7 +28,7 @@ const Dashboard = () => {
   // Navigation items
 
   const adminNavList = [
-    { label: "🏠 Overview" },
+    // { label: "🏠 Overview" },
     { label: "➕ Add Instructor" },
     { label: "👨‍🏫 View Instructors" },
     { label: "👨‍🎓 View Students" },
@@ -39,7 +41,7 @@ const Dashboard = () => {
 
   // Components for each menu item
   const adminComponents = [
-    <div key="overview">🏠 This is the Overview page</div>,
+    // <div key="overview">🏠 This is the Overview page</div>,
     <div key="add-instructor">➕ Add Instructor form goes here</div>,
     <ViewInstructor key="view-instructors" />,
     <ViewStudents key={"view-students"} />,
@@ -51,7 +53,7 @@ const Dashboard = () => {
   ];
 
   const instructorNavList = [
-    { label: "🏠 Overview" },
+    // { label: "🏠 Overview" },
     { label: "➕ Add Course" },
     { label: "👨‍🎓 View Students" },
     { label: "📚 View Courses" },
@@ -61,7 +63,7 @@ const Dashboard = () => {
   ];
 
   const instructorComponents = [
-    <div key="overview">🏠 This is the Overview page</div>,
+    // <div key="overview">🏠 This is the Overview page</div>,
     <CreateCourses key={"create-course"} />,
     <ViewStudents key={"view-students"} />,
     <ViewCourses key={"view-courses"} />,
@@ -72,6 +74,7 @@ const Dashboard = () => {
 
   const studentNavList = [
     { label: "🏠 Overview" },
+    { label: " 🔍 All Courses" },
     { label: "📚 My Courses" },
     { label: "🔍 Browse Courses" },
     { label: "📋 My Enrollments" },
@@ -80,10 +83,11 @@ const Dashboard = () => {
   ];
 
   const studentComponents = [
-    <div key="overview">🏠 This is the Overview page</div>,
+    <HomePage key={"home-page"} />,
+    <ViewCourses key={"view-courses"} />,
     <div key="my-courses">📚 List of my courses goes here</div>,
     <div key="browse-courses">🔍 Browse available courses here</div>,
-    <div key="my-enrollments">📋 My enrollments details go here</div>,
+    <MyOwnEnrolledCourses key={"my-enrollments"} />,
     <div key="my-payments">💰 My payment history goes here</div>,
     <div key="settings">⚙️ User settings form goes here</div>,
   ];

@@ -8,6 +8,7 @@ import Login from "./login/page";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Sidebar from "@/component/sidebar/page";
+import HomePage from "@/component/HomePage/page";
 
 // const navList = [
 //   { label: "Home", href: "/" },
@@ -34,10 +35,7 @@ export default function Home() {
   return (
     <>
       {/* <Navbar navList={navList} setShowModal={setShowModal} /> */}
-      <Carousel />
-      <CourseCarousel />
-
-      <InstructorCarousels />
+      <HomePage />
     </>
   );
 }
