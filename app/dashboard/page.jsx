@@ -17,9 +17,9 @@ const Dashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const token = Cookies.get("token");
+  // const token = Cookies.get("token");
 
-  const role = Cookies.get("role")?.toLowerCase();
+  // const role = Cookies.get("role")?.toLowerCase();
 
   // const token = localStorage.getItem("token");
   // const role = localStorage.getItem("role")?.toLowerCase();
@@ -97,13 +97,15 @@ const Dashboard = () => {
     const role = Cookies.get("role")?.toLowerCase();
     setIsAuthenticated(!!token);
   }, []);
-  console.log("getrole", role);
+  // console.log("getrole", role);
 
   // or "admin"
   // const navList = role === "instructor" ? instructorNavList : adminNavList;
 
   // const componentsToRender =
   //   role === "instructor" ? instructorComponents : adminComponents ;
+  const role = Cookies.get("role")?.toLowerCase();
+  console.log("User role from cookies:", role);
   const navList =
     role === "admin"
       ? adminNavList

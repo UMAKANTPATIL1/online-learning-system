@@ -74,6 +74,7 @@ const ViewCourses = () => {
         <CourseModal
           course={selectedCourse}
           onClose={() => setSelectedCourse(null)}
+          userId={localStorage.getItem("id")}
         />
       )}
 

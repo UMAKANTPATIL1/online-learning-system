@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 const CourseContext = createContext();
 
@@ -61,14 +61,15 @@ export const CourseProvider = ({ children }) => {
 
   const login = async (credentials, setShowModal) => {
     try {
-      console.log(`localhost here: ${process.env.NEXT_PUBLIC_API_URL}`);
+      console.log(`API URL: ${process.env.NEXT_PUBLIC_API_URL}`);
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
         {
           email: credentials.email,
-          password: credentials.password,
+          password: credentials.password, // must be sent for login
         },
-        { withCredentials: true } // important for cookies
+        { withCredentials: true } // allow cookies (JWT in HttpOnly cookie)
       );
 
       if (response.status === 200) {
@@ -78,34 +79,36 @@ export const CourseProvider = ({ children }) => {
         if (!token) {
           throw new Error("No token received from backend");
         }
+
         const normalizedRole = role?.toLowerCase() || "guest";
+
+        // Store user info (without password!)
         const newUser = {
           email: credentials.email,
           role: normalizedRole,
           token,
           id: userId,
         };
-        toast.success(`${normalizedRole}Login successful!`);
 
-        //  save in state + localStorage
-        console.log("user data from login:", newUser);
+        toast.success(`${normalizedRole} login successful!`);
+
+        // save in state + localStorage
+        console.log("User data from login:", newUser);
         setUser(newUser);
+
         localStorage.setItem("token", token);
         localStorage.setItem("role", normalizedRole);
         localStorage.setItem("id", userId);
 
         setError(null);
 
-        console.log("role:", normalizedRole);
-        console.log("token:", token);
-
         if (setShowModal) setShowModal(false);
 
-        //  navigate after state update
+        // Navigate after login
         router.push("/dashboard");
       }
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("Login failed:", error.response?.data || error.message);
       setError("Invalid credentials. Try again.");
     }
   };
@@ -189,7 +192,7 @@ export const CourseProvider = ({ children }) => {
       // Call backend logout
       await axios.post(
         "http://localhost:8082/api/auth/logout",
-        {},
+
         { withCredentials: true }
       );
 
@@ -201,9 +204,10 @@ export const CourseProvider = ({ children }) => {
       console.log("get token in context:", localStorage.getItem("token"));
       localStorage.removeItem("token");
       localStorage.removeItem("role");
+      localStorage.removeItem("id");
       Cookies.remove("token", { path: "/" });
       Cookies.remove("role", { path: "/" });
-      Cookies.remove("name", { path: "/" });
+      Cookies.remove("id", { path: "/" });
 
       // Redirect
       router.push("/");
@@ -219,11 +223,30 @@ export const CourseProvider = ({ children }) => {
         { withCredentials: true }
       );
       console.log("enrolled courses user id ", userId);
-      console.log("Enrolled courses fetched:", response.data);
-      console.log("User info ", response.data);
+
+      // const responseData = response.data.map((enrollment) => enrollment.course);
+      console.log("responseData", response.data);
       setGetData(response.data);
     } catch (error) {
       console.error("Error fetching enrolled courses:", error);
+    }
+  };
+
+  const postEnrolledCourse = async (courseId, userId) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8082/api/auth/enrolled`,
+        {
+          courseId,
+          userId,
+        }
+      );
+
+      console.log("Enrolled in course:", response.data);
+      toast.success("Successfully enrolled in course!");
+    } catch (error) {
+      console.error("Error in post enrolled course:", error);
+      toast.error("Failed to enroll in course.");
     }
   };
   return (
@@ -244,6 +267,7 @@ export const CourseProvider = ({ children }) => {
         rejectCourse,
         viewStudents,
         MyEnrolledCourses,
+        postEnrolledCourse,
       }}
     >
       {children}

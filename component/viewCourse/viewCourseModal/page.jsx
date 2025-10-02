@@ -1,13 +1,23 @@
+import { useCourse } from "@/app/contextApi/page";
 import Modal from "@/component/modal/page";
 import React from "react";
 
-const CourseModal = ({ course, onClose }) => {
+const CourseModal = ({ course, onClose, userId }) => {
   if (!course) return null;
 
+  const { postEnrolledCourse } = useCourse();
+  console.log("course in modal", course);
+  console.log("user in modal", userId);
+  const handleEnrollCourse = () => {
+    postEnrolledCourse(course?.id, userId);
+    onClose();
+  };
   return (
     <Modal onClose={onClose} modalBgColor="bg-gray-100">
       {/* Header */}
       <div className="flex flex-col items-center text-center">
+        userId={userId} <br />
+        {/* userid={user?.id} */}
         <div className="relative">
           <img
             src={course.fileUrl || "/default-course.png"}
@@ -51,12 +61,14 @@ const CourseModal = ({ course, onClose }) => {
         >
           Close
         </button>
-        <button
-          onClick={() => alert("Enroll feature coming soon!")}
-          className="px-5 py-2 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
-        >
-          Enroll Now
-        </button>
+        {localStorage.getItem("role")?.toLocaleLowerCase() === "student" && (
+          <button
+            onClick={() => handleEnrollCourse()}
+            className="px-5 py-2 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+          >
+            Enroll Now
+          </button>
+        )}
       </div>
     </Modal>
   );

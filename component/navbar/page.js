@@ -52,11 +52,12 @@ const Navbar = ({ navList }) => {
     if (token) {
       // ✅ Correctly remove by key (not value)
       Cookies.remove("token", { path: "/" });
-      Cookies.remove("name", { path: "/" });
+      // Cookies.remove("name", { path: "/" });
       Cookies.remove("role", { path: "/" });
-      Cookies.remove("image", { path: "/" });
+      // Cookies.remove("image", { path: "/" });
       localStorage.removeItem("token");
       localStorage.removeItem("role");
+      localStorage.removeItem("id");
 
       setIsAuthenticated(false);
       setUser({ name: "", image: "" });
