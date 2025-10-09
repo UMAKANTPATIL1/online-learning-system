@@ -3,7 +3,10 @@ import { useCourse } from "@/app/contextApi/page";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CourseModal from "./viewCourseModal/page";
-
+import { Delete, DeleteIcon } from "lucide-react";
+import { MdDeleteForever } from "react-icons/md";
+import axios from "axios";
+import toast from "react-hot-toast";
 const ViewCourses = () => {
   const { getData, getAllCourses } = useCourse();
   const [visibleCount, setVisibleCount] = useState(15);
@@ -39,9 +42,34 @@ const ViewCourses = () => {
     </div>
   );
 
+  const handleDelete = async (courseId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this course?"
+    );
+    if (confirmDelete) {
+      try {
+        const response = await axios.delete(
+          `http://localhost:8082/api/auth/delete/${courseId}`
+        );
+
+        if (response.status === 200) {
+          toast.success("Course deleted successfully");
+
+          // ✅ Update state properly
+          getAllCourses();
+        } else {
+          toast.error("Failed to delete the course");
+        }
+      } catch (error) {
+        console.error("Error deleting course:", error);
+        toast.error("Something went wrong while deleting the course");
+      }
+    }
+  };
+
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">View Courses</h1>
+    <div className="p-4 text-black">
+      <h1 className="text-2xl font-bold mb-4 text-blue-500">View Courses</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-black">
         {loading
@@ -56,6 +84,14 @@ const ViewCourses = () => {
                 className="bg-white border rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col items-center cursor-pointer"
                 onClick={() => setSelectedCourse(course)}
               >
+                {localStorage.getItem("role").toLowerCase() === "admin" && (
+                  <button className="flex self-end text-red-500 hover:text-red-700 mb-2">
+                    <MdDeleteForever
+                      size={28}
+                      onClick={() => handleDelete(course.id)}
+                    />
+                  </button>
+                )}
                 <img
                   src={course.thumbnailUrl || "/default-avatar.png"}
                   alt={course.courseTitle}
@@ -65,18 +101,30 @@ const ViewCourses = () => {
                 <p className="text-gray-600 text-sm my-1 text-center">
                   {course.category}
                 </p>
+                <button
+                  className="bg-blue-500 hover:bg-blue-800 cursor-pointer text-white px-4 py-2 rounded"
+                  onClick={() =>
+                    router.push(
+                      `/course/${course.courseTitle
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")}`
+                    )
+                  }
+                >
+                  Explore Course
+                </button>
               </div>
             ))}
       </div>
 
       {/* Modal */}
-      {selectedCourse && (
+      {/* {selectedCourse && (
         <CourseModal
           course={selectedCourse}
           onClose={() => setSelectedCourse(null)}
           userId={localStorage.getItem("id")}
         />
-      )}
+      )} */}
 
       {/* Load More */}
       {!loading && visibleCount < approvedCourses.length && (
