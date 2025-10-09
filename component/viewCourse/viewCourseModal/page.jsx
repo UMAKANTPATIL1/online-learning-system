@@ -16,11 +16,10 @@ const CourseModal = ({ course, onClose, userId }) => {
     <Modal onClose={onClose} modalBgColor="bg-gray-100">
       {/* Header */}
       <div className="flex flex-col items-center text-center">
-        userId={userId} <br />
         {/* userid={user?.id} */}
         <div className="relative">
           <img
-            src={course.fileUrl || "/default-course.png"}
+            src={course.thumbnailUrl || "/default-course.png"}
             alt={course.courseTitle}
             className="w-36 h-28 rounded-lg border border-gray-200 shadow-md object-cover"
           />

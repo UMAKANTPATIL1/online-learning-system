@@ -1,17 +1,24 @@
 "use client";
 import { useCourse } from "@/app/contextApi/page";
 import React, { useState } from "react";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 const CreateCourses = () => {
   const { user } = useCourse();
+
   const [formData, setFormData] = useState({
     courseTitle: "",
     courseDescription: "",
     category: "",
     published: false,
   });
-  const [fileUrl, setFileUrl] = useState(null);
+
+  const [thumbnail, setThumbnail] = useState(null);
+  const [videos, setVideos] = useState([]);
+  const [videoTitles, setVideoTitles] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -21,15 +28,25 @@ const CreateCourses = () => {
     });
   };
 
-  const handleFileChange = (e) => {
-    setFileUrl(e.target.files[0]);
+  const handleThumbnailChange = (e) => setThumbnail(e.target.files[0]);
+
+  const handleVideoChange = (e) => {
+    const files = Array.from(e.target.files);
+    setVideos(files);
+    setVideoTitles(files.map((f) => f.name.replace(/\.[^/.]+$/, ""))); // default video titles
+  };
+
+  const handleVideoTitleChange = (index, value) => {
+    const newTitles = [...videoTitles];
+    newTitles[index] = value;
+    setVideoTitles(newTitles);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!fileUrl) {
-      toast.error("Please upload a file first");
+    if (!thumbnail || videos.length === 0) {
+      toast.error("Please upload a thumbnail and at least one video!");
       return;
     }
 
@@ -39,128 +56,154 @@ const CreateCourses = () => {
       data.append("courseDescription", formData.courseDescription);
       data.append("category", formData.category);
       data.append("published", formData.published);
-      data.append("fileUrl", fileUrl);
+      data.append("thumbnail", thumbnail);
 
-      const res = await fetch(
+      videos.forEach((video) => data.append("videos", video));
+      videoTitles.forEach((title) => data.append("videoTitles", title));
+
+      setIsUploading(true);
+      setUploadProgress(0);
+
+      const res = await axios.post(
         `http://localhost:8082/api/auth/create-course/${user.email}`,
+        data,
         {
-          method: "POST",
-          body: data,
+          headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (event) => {
+            const percent = Math.round((event.loaded * 100) / event.total);
+            setUploadProgress(percent);
+          },
+          withCredentials: true,
         }
       );
 
-      if (res.ok) {
-        toast.success("Course added successfully!");
+      if (res.status === 200) {
+        toast.success("Course created successfully!");
         setFormData({
           courseTitle: "",
           courseDescription: "",
           category: "",
           published: false,
         });
-        setFileUrl(null);
-      } else {
-        toast.error("Failed to add course");
+        setThumbnail(null);
+        setVideos([]);
+        setVideoTitles([]);
       }
-    } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error creating course");
+    } finally {
+      setIsUploading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-50 to-gray-100 p-6">
       <div className="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-lg border border-gray-200">
-        {/* Title */}
         <h2 className="text-3xl font-bold mb-6 text-gray-900">
           Add New Course
         </h2>
-        <p className="text-gray-500 mb-8 text-sm">
-          Fill in the details below to create a new course.
-        </p>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Course Title */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Course Title
-            </label>
-            <input
-              type="text"
-              name="courseTitle"
-              value={formData.courseTitle}
-              onChange={handleChange}
-              required
-              className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter course title"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-6 text-black">
+          {/* Basic Info */}
+          <input
+            type="text"
+            name="courseTitle"
+            value={formData.courseTitle}
+            onChange={handleChange}
+            placeholder="Course Title"
+            className="w-full border rounded-lg p-3"
+          />
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Course Description
-            </label>
-            <textarea
-              name="courseDescription"
-              value={formData.courseDescription}
-              onChange={handleChange}
-              required
-              rows="4"
-              className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Briefly describe the course"
-            />
-          </div>
+          <textarea
+            name="courseDescription"
+            value={formData.courseDescription}
+            onChange={handleChange}
+            placeholder="Course Description"
+            rows="3"
+            className="w-full border rounded-lg p-3"
+          />
 
-          {/* Category */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Category
-            </label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g., Programming, Business, Design"
-            />
-          </div>
+          <input
+            type="text"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            placeholder="Category"
+            className="w-full border rounded-lg p-3"
+          />
 
-          {/* Published */}
-          <div className="flex items-center">
+          <label className="flex items-center space-x-2">
             <input
               type="checkbox"
               name="published"
               checked={formData.published}
               onChange={handleChange}
-              className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
             />
-            <label className="ml-2 text-gray-700 text-sm">
-              Publish immediately
-            </label>
-          </div>
+            <span>Publish immediately</span>
+          </label>
 
-          {/* File Upload */}
+          {/* Thumbnail Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Upload File
+              Upload Thumbnail
             </label>
             <input
               type="file"
-              name="fileUrl"
-              onChange={handleFileChange}
-              className="mt-2 block w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              accept="image/*"
+              onChange={handleThumbnailChange}
+              className="mt-2 block w-full border p-2 rounded-lg"
             />
           </div>
 
-          {/* Submit */}
+          {/* Video Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Upload Videos
+            </label>
+            <input
+              type="file"
+              accept="video/*"
+              multiple
+              onChange={handleVideoChange}
+              className="mt-2 block w-full border p-2 rounded-lg"
+            />
+          </div>
+
+          {/* Video Titles */}
+          {videos.map((video, index) => (
+            <div key={index} className="mt-2">
+              <label className="text-sm font-medium text-gray-600">
+                Title for: {video.name}
+              </label>
+              <input
+                type="text"
+                value={videoTitles[index] || ""}
+                onChange={(e) => handleVideoTitleChange(index, e.target.value)}
+                className="mt-1 w-full border rounded-lg p-2"
+              />
+            </div>
+          ))}
+
+          {/* Progress Bar */}
+          {isUploading && (
+            <div className="mt-4">
+              <div className="w-full bg-gray-200 h-3 rounded-full">
+                <div
+                  className="bg-blue-600 h-3 rounded-full"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+              <p className="text-sm text-center mt-1">{uploadProgress}%</p>
+            </div>
+          )}
+
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium text-lg hover:bg-blue-700 shadow-md transition-all duration-200"
+            disabled={isUploading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg mt-4 cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add Course
+            {isUploading ? "Uploading..." : "Create Course"}
           </button>
         </form>
       </div>

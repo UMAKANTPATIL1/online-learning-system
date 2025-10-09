@@ -1,6 +1,7 @@
 "use client";
 import { useCourse } from "@/app/contextApi/page";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const PendingCourse = () => {
   const { getData, pendingCourses, approveCourse, rejectCourse, user } =
@@ -11,27 +12,63 @@ const PendingCourse = () => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
-  // ✅ Always paginate over getData
-  const totalPages =
-    getData.length > 0 ? Math.ceil(getData.length / itemsPerPage) : 1;
+  const totalPages = Math.ceil(getData.length / itemsPerPage) || 1;
   const startIndex = (page - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedData = getData.slice(startIndex, endIndex);
+  const paginatedData = getData.slice(startIndex, startIndex + itemsPerPage);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchPendingCourses = async () => {
       setLoading(true);
-      await pendingCourses();
-      setLoading(false);
+      try {
+        await pendingCourses();
+      } catch (err) {
+        toast.error("Failed to load pending courses ❌");
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchData();
+    fetchPendingCourses();
+    console.log("Pending Courses Data:", getData);
   }, []);
 
+  // useEffect(() => {
+  //   const fetchPendingCourses = async () => {
+  //     setLoading(true);
+  //     try {
+  //       await pendingCourses();
+  //     } catch (err) {
+  //       toast.error("Failed to load pending courses ❌");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   // fetchPendingCourses();
+  // });
+
+  // ✅ Approve Handler
+  const handleApprove = async (id) => {
+    try {
+      await approveCourse(id, user?.email);
+
+      toast.success("Course approved successfully ✅");
+    } catch (err) {
+      toast.error("Failed to approve course ❌");
+    }
+  };
+
+  // ✅ Reject Handler
+  const handleReject = async (id) => {
+    try {
+      await rejectCourse(id, user?.email);
+      toast.success("Course rejected successfully 🚫");
+    } catch (err) {
+      toast.error("Failed to reject course ❌");
+    }
+  };
+
   return (
-    <div className="p-6 bg-gray-50 min-h-screen overflow-y-auto scrollbar-hide ">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800 ">
-        Pending Courses
-      </h1>
+    <div className="p-6 bg-gray-50 min-h-screen overflow-y-auto scrollbar-hide">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Pending Courses</h1>
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
@@ -87,15 +124,15 @@ const PendingCourse = () => {
                     className="border-b hover:bg-gray-50 transition"
                   >
                     <td className="px-6 py-4">
-                      {course.fileUrl?.endsWith(".mp4") ? (
+                      {course.videoUrl?.endsWith(".mp4") ? (
                         <video
-                          src={course.fileUrl}
+                          src={course.videoUrl}
                           controls
                           className="w-24 h-16 rounded-md object-cover"
                         />
                       ) : (
                         <img
-                          src={course.fileUrl}
+                          src={course.thumbnailUrl}
                           alt={course.courseTitle}
                           className="w-24 h-16 rounded-md object-cover"
                         />
@@ -110,21 +147,18 @@ const PendingCourse = () => {
                       ₹{course.coursePrice}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      {user.role === "admin" && (
-                        <div className="flex justify-center gap-3  ">
-                          (
+                      {localStorage.getItem("role")?.toLowerCase() ===
+                        "admin" && (
+                        <div className="flex justify-center gap-3">
                           <button
                             className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition cursor-pointer"
-                            onClick={() => approveCourse(course.id, user.email)}
+                            onClick={() => handleApprove(course?.id)}
                           >
                             Approve
                           </button>
-                          )
                           <button
                             className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition cursor-pointer"
-                            onClick={() =>
-                              rejectCourse(course.id, "admin@gmail.com")
-                            }
+                            onClick={() => handleReject(course?.id)}
                           >
                             Reject
                           </button>
@@ -139,7 +173,7 @@ const PendingCourse = () => {
         </div>
       </div>
 
-      {/* ✅ Professional Pagination */}
+      {/* ✅ Pagination */}
       {!loading && totalPages > 1 && (
         <div className="flex justify-center items-center mt-6 space-x-2">
           <button
@@ -154,7 +188,6 @@ const PendingCourse = () => {
             ⬅ Prev
           </button>
 
-          {/* Page Numbers */}
           {[...Array(totalPages)].map((_, i) => (
             <button
               key={i}

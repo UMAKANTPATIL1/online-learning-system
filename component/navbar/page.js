@@ -1,5 +1,6 @@
 "use client";
 
+import { useCourse } from "@/app/contextApi/page";
 import Login from "@/app/login/page";
 import Register from "@/app/register/page";
 import Cookies from "js-cookie";
@@ -8,6 +9,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const Navbar = ({ navList }) => {
+  const { logout } = useCourse();
+
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState({ name: "", image: "" });
@@ -51,19 +54,21 @@ const Navbar = ({ navList }) => {
 
     if (token) {
       // ✅ Correctly remove by key (not value)
-      Cookies.remove("token", { path: "/" });
-      // Cookies.remove("name", { path: "/" });
-      Cookies.remove("role", { path: "/" });
-      // Cookies.remove("image", { path: "/" });
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      localStorage.removeItem("id");
+      // Cookies.remove("token", { path: "/" });
+      // // Cookies.remove("name", { path: "/" });
+      // Cookies.remove("role", { path: "/" });
+      // // Cookies.remove("image", { path: "/" });
+      // localStorage.removeItem("token");
+      // localStorage.removeItem("role");
+      // localStorage.removeItem("id");
 
-      setIsAuthenticated(false);
-      setUser({ name: "", image: "" });
+      // setIsAuthenticated(false);
+      // setUser({ name: "", image: "" });
 
-      router.push("/");
-      router.refresh(); // optional, if you need hard refresh
+      // router.push("/");
+      logout();
+
+      // router.refresh(); // optional, if you need hard refresh
     } else {
       setShowModal(true);
       router.push("/?showLogin=true");

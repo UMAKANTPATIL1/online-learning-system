@@ -20,8 +20,8 @@ const HomePage = () => {
     <div>
       <Carousel />
       <CourseCarousel />
-
-      {role !== "student" && role && <InstructorCarousels />}
+      {role != "student" ? <InstructorCarousels /> : ""}
+      {/* {role != "student" && role && <InstructorCarousels />} */}
     </div>
   );
 };

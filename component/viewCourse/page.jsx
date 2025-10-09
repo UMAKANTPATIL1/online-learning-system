@@ -43,7 +43,7 @@ const ViewCourses = () => {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">View Courses</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-black">
         {loading
           ? // Show skeletons while loading
             Array.from({ length: visibleCount }).map((_, index) => (
@@ -57,7 +57,7 @@ const ViewCourses = () => {
                 onClick={() => setSelectedCourse(course)}
               >
                 <img
-                  src={course.fileUrl || "/default-avatar.png"}
+                  src={course.thumbnailUrl || "/default-avatar.png"}
                   alt={course.courseTitle}
                   className="w-24 h-24 rounded-full object-cover mb-3"
                 />

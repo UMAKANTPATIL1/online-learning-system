@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+import Cookies from "js-cookie";
 
 const CourseContext = createContext();
 
@@ -53,6 +54,14 @@ export const CourseProvider = ({ children }) => {
   // 📌 Utility function for checking video
   const isVideo = (url) => {
     if (!url) return false;
+
+    // Handle Cloudinary or nested objects
+    if (typeof url === "object" && url.secure_url) {
+      url = url.secure_url;
+    }
+
+    if (typeof url !== "string") return false;
+
     const videoExtensions = [".mp4", ".mov", ".avi", ".webm"];
     return videoExtensions.some((ext) => url.toLowerCase().endsWith(ext));
   };
@@ -74,7 +83,7 @@ export const CourseProvider = ({ children }) => {
 
       if (response.status === 200) {
         // destructure safely
-        const { token, role, userId } = response.data;
+        const { token, role, userId, email } = response.data;
 
         if (!token) {
           throw new Error("No token received from backend");
@@ -99,6 +108,7 @@ export const CourseProvider = ({ children }) => {
         localStorage.setItem("token", token);
         localStorage.setItem("role", normalizedRole);
         localStorage.setItem("id", userId);
+        localStorage.setItem("user", JSON.stringify(newUser));
 
         setError(null);
 
@@ -125,6 +135,19 @@ export const CourseProvider = ({ children }) => {
       console.error("Error fetching pending courses:", error);
     }
   };
+  // const pendingCourses = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       "http://localhost:8082/api/auth/pending-courses",
+  //       { withCredentials: true }
+  //     );
+  //     setGetData(response.data);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error fetching pending courses:", error);
+  //     setGetData([]);
+  //   }
+  // };
 
   const viewEnrolledStudents = async (courseId) => {
     try {
@@ -143,14 +166,19 @@ export const CourseProvider = ({ children }) => {
   };
 
   const approveCourse = async (courseId, adminEmail) => {
+    console.log("object", courseId, adminEmail);
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         `http://localhost:8082/api/auth/approve-course`,
         { courseId, adminEmail },
         { withCredentials: true }
       );
+      console.log(courseId, adminEmail);
       console.log("Course approved:", response.data);
       // Optionally refresh the course list
+      // setGetData((prevData) =>
+      //   prevData.filter((course) => course.id !== courseId)
+      // );
       await pendingCourses();
     } catch (error) {
       console.error("Error approving course:", error);
@@ -159,13 +187,16 @@ export const CourseProvider = ({ children }) => {
 
   const rejectCourse = async (courseId, adminEmail) => {
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         `http://localhost:8082/api/auth/reject-course`,
         { courseId, adminEmail },
         { withCredentials: true }
       );
       console.log("Course rejected:", response.data);
       // Optionally refresh the course list
+      setGetData((prevData) =>
+        prevData.filter((course) => course.id !== courseId)
+      );
       await pendingCourses();
     } catch (error) {
       console.error("Error rejecting course:", error);
@@ -204,10 +235,10 @@ export const CourseProvider = ({ children }) => {
       console.log("get token in context:", localStorage.getItem("token"));
       localStorage.removeItem("token");
       localStorage.removeItem("role");
-      localStorage.removeItem("id");
+      localStorage.removeItem("userId");
       Cookies.remove("token", { path: "/" });
       Cookies.remove("role", { path: "/" });
-      Cookies.remove("id", { path: "/" });
+      Cookies.remove("userId", { path: "/" });
 
       // Redirect
       router.push("/");
