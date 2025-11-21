@@ -116,7 +116,9 @@
 //     </div>
 //   );
 // }
+
 "use client";
+export const dynamic = "force-dynamic";
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useCourse } from "@/app/contextApi/page";
