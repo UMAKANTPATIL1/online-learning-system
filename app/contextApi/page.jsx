@@ -13,6 +13,7 @@ export const CourseProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [instructors, setInstructors] = useState([]);
   const router = useRouter();
+  // const backendUrl = "https://lms-production-9f83.up.railway.app";
 
   // 📌 Restore user from localStorage on refresh
   useEffect(() => {
@@ -39,7 +40,7 @@ export const CourseProvider = ({ children }) => {
   const fetchAllInstructors = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8082/api/auth/get-all-instructor",
+        `${process.env.NEXT_PUBLIC_API_URL}backendUrl/api/auth/get-all-instructor`,
         { withCredentials: true }
       );
       console.log(response.data);
@@ -126,7 +127,7 @@ export const CourseProvider = ({ children }) => {
   const pendingCourses = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8082/api/auth/pending-courses",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/pending-courses`,
         { withCredentials: true }
       );
       console.log("Pending courses fetched:", response.data);
@@ -152,7 +153,7 @@ export const CourseProvider = ({ children }) => {
   const viewEnrolledStudents = async (courseId) => {
     try {
       const response = await axios.get(
-        "http://localhost:8082/api/auth/get-all-enrolled-user"
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-all-enrolled-user`
         // { withCredentials: true }
       );
       console.log("enrolled students:", response.data);
@@ -169,7 +170,7 @@ export const CourseProvider = ({ children }) => {
     console.log("object", courseId, adminEmail);
     try {
       const response = await axios.put(
-        `http://localhost:8082/api/auth/approve-course`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/approve-course`,
         { courseId, adminEmail },
         { withCredentials: true }
       );
@@ -188,7 +189,7 @@ export const CourseProvider = ({ children }) => {
   const rejectCourse = async (courseId, adminEmail) => {
     try {
       const response = await axios.put(
-        `http://localhost:8082/api/auth/reject-course`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reject-course`,
         { courseId, adminEmail },
         { withCredentials: true }
       );
@@ -206,7 +207,7 @@ export const CourseProvider = ({ children }) => {
   const viewStudents = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8082/api/auth/get-all-students",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-all-students`,
         { withCredentials: true }
       );
       setGetData(response.data);
@@ -222,7 +223,7 @@ export const CourseProvider = ({ children }) => {
     try {
       // Call backend logout
       await axios.post(
-        "http://localhost:8082/api/auth/logout",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
 
         { withCredentials: true }
       );
@@ -250,7 +251,7 @@ export const CourseProvider = ({ children }) => {
   const MyEnrolledCourses = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8082/api/auth/get-own-courses/${userId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-own-courses/${userId}`,
         { withCredentials: true }
       );
       console.log("enrolled courses user id ", userId);
@@ -266,7 +267,7 @@ export const CourseProvider = ({ children }) => {
   const postEnrolledCourse = async (courseId, userId) => {
     try {
       const response = await axios.post(
-        `http://localhost:8082/api/auth/enrolled`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/enrolled`,
         {
           courseId,
           userId,
