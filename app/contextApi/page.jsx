@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import Cookies from "js-cookie";
+import { request } from "node:https";
 
 const CourseContext = createContext();
 
@@ -99,9 +100,9 @@ export const CourseProvider = ({ children }) => {
           token,
           id: userId,
         };
-        // setCookies("token", token, { path: "/" });
-        // setCookies("role", normalizedRole, { path: "/" });
-        // setCookies("userId", userId, { path: "/" });
+        Cookies.set("token", token, { path: "/", sameSite: "Strict" });
+        Cookies.set("role", normalizedRole, { path: "/", sameSite: "Strict" });
+        Cookies.set("userId", userId, { path: "/", sameSite: "Strict" });
         toast.success(`${normalizedRole} login successful!`);
 
         // save in state + localStorage

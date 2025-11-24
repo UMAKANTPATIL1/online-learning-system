@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { NextResponse } from "next/server";
 
 export function middleware(request) {
@@ -6,7 +7,7 @@ export function middleware(request) {
   //   request.headers.get("authorization")?.split("Bearer ")[1] ||
   //   null;
 
-  const token = localStorage.getItem("token") || null;
+  const token = Cookies.get("token");
   const { pathname } = request.nextUrl;
 
   console.log("path name:", pathname);
