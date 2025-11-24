@@ -99,7 +99,9 @@ export const CourseProvider = ({ children }) => {
           token,
           id: userId,
         };
-
+        setCookies("token", token, { path: "/" });
+        setCookies("role", normalizedRole, { path: "/" });
+        setCookies("userId", userId, { path: "/" });
         toast.success(`${normalizedRole} login successful!`);
 
         // save in state + localStorage
