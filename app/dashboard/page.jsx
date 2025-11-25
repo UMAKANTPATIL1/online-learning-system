@@ -11,6 +11,7 @@ import ViewEnrolledStudents from "@/component/viewEnrolledStudents/page";
 import ViewInstructor from "@/component/viewInstructors/page";
 import ViewStudents from "@/component/viewStudents/page";
 import Cookies from "js-cookie";
+import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
 const Dashboard = () => {
@@ -91,18 +92,13 @@ const Dashboard = () => {
     <div key="my-payments">💰 My payment history goes here</div>,
     <div key="settings">⚙️ User settings form goes here</div>,
   ];
-  // useEffect(() => {
-  //     const token = Cookies.get("token");
 
-  //   }, [router]);
   useEffect(() => {
     const token = Cookies.get("token");
     const role = Cookies.get("role")?.toLowerCase();
-    if (!token) {
-      router.push("/?showLogin=true");
-    }
+
     setIsAuthenticated(!!token);
-  }, [router]);
+  }, []);
   // console.log("getrole", role);
 
   // or "admin"
