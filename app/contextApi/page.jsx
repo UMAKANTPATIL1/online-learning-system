@@ -40,7 +40,7 @@ export const CourseProvider = ({ children }) => {
   const fetchAllInstructors = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}backendUrl/api/auth/get-all-instructor`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-all-instructor`,
         { withCredentials: true }
       );
       console.log(response.data);
@@ -74,7 +74,7 @@ export const CourseProvider = ({ children }) => {
       console.log(`API URL: ${process.env.NEXT_PUBLIC_API_URL}`);
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+        `http://localhost:8082/api/auth/login`,
         {
           email: credentials.email,
           password: credentials.password, // must be sent for login
@@ -99,9 +99,9 @@ export const CourseProvider = ({ children }) => {
           token,
           id: userId,
         };
-        Cookies.set("token", token, { path: "/", sameSite: "Strict" });
-        Cookies.set("role", normalizedRole, { path: "/", sameSite: "Strict" });
-        Cookies.set("userId", userId, { path: "/", sameSite: "Strict" });
+        // Cookies.set("token", token, { path: "/", sameSite: "Strict" });
+        // Cookies.set("role", normalizedRole, { path: "/", sameSite: "Strict" });
+        // Cookies.set("userId", userId, { path: "/", sameSite: "Strict" });
         toast.success(`${normalizedRole} login successful!`);
 
         // save in state + localStorage

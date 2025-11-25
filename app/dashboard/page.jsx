@@ -11,7 +11,7 @@ import ViewEnrolledStudents from "@/component/viewEnrolledStudents/page";
 import ViewInstructor from "@/component/viewInstructors/page";
 import ViewStudents from "@/component/viewStudents/page";
 import Cookies from "js-cookie";
-import { Router, useRouter } from "next/router";
+
 import React, { useEffect, useState } from "react";
 
 const Dashboard = () => {
@@ -92,22 +92,18 @@ const Dashboard = () => {
     <div key="my-payments">💰 My payment history goes here</div>,
     <div key="settings">⚙️ User settings form goes here</div>,
   ];
+  // const token = Cookies.get("token");
+  // const role = Cookies.get("role")?.toLowerCase();
+  const role = localStorage.getItem("role");
 
   useEffect(() => {
     const token = Cookies.get("token");
     const role = Cookies.get("role")?.toLowerCase();
-
     setIsAuthenticated(!!token);
   }, []);
-  // console.log("getrole", role);
 
-  // or "admin"
-  // const navList = role === "instructor" ? instructorNavList : adminNavList;
-
-  // const componentsToRender =
-  //   role === "instructor" ? instructorComponents : adminComponents ;
-  const role = Cookies.get("role")?.toLowerCase();
   console.log("User role from cookies:", role);
+
   const navList =
     role === "admin"
       ? adminNavList
