@@ -68,13 +68,13 @@ export const CourseProvider = ({ children }) => {
   };
 
   //  Login handler
-
+  const NEXT_PUBLIC_API_URL = "https://lms-production-9f83.up.railway.app";
   const login = async (credentials, setShowModal) => {
     try {
-      console.log(`API URL: ${process.env.NEXT_PUBLIC_API_URL}`);
+      console.log(`API URL: ${NEXT_PUBLIC_API_URL}`);
 
       const response = await axios.post(
-        `http://localhost:8082/api/auth/login`,
+        `${NEXT_PUBLIC_API_URL}/api/auth/login`,
         {
           email: credentials.email,
           password: credentials.password, // must be sent for login
