@@ -28,7 +28,7 @@ export const CourseProvider = ({ children }) => {
   const getAllCourses = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-courses`
+        `${NEXT_PUBLIC_API_URL}/api/auth/get-courses`
       );
       setGetData(response.data);
     } catch (error) {
@@ -40,8 +40,8 @@ export const CourseProvider = ({ children }) => {
   const fetchAllInstructors = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-all-instructor`,
-        { withCredentials: true }
+        `${NEXT_PUBLIC_API_URL}/api/auth/get-all-instructor`
+        // { withCredentials: true }
       );
       console.log(response.data);
       setInstructors(response.data);
@@ -130,8 +130,8 @@ export const CourseProvider = ({ children }) => {
   const pendingCourses = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/pending-courses`,
-        { withCredentials: true }
+        `${NEXT_PUBLIC_API_URL}/api/auth/pending-courses`
+        // { withCredentials: true }
       );
       console.log("Pending courses fetched:", response.data);
       setGetData(response.data);
@@ -156,7 +156,7 @@ export const CourseProvider = ({ children }) => {
   const viewEnrolledStudents = async (courseId) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-all-enrolled-user`
+        `${NEXT_PUBLIC_API_URL}/api/auth/get-all-enrolled-user`
         // { withCredentials: true }
       );
       console.log("enrolled students:", response.data);
@@ -173,9 +173,9 @@ export const CourseProvider = ({ children }) => {
     console.log("object", courseId, adminEmail);
     try {
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/approve-course`,
-        { courseId, adminEmail },
-        { withCredentials: true }
+        `${NEXT_PUBLIC_API_URL}/api/auth/approve-course`,
+        { courseId, adminEmail }
+        // { withCredentials: true }
       );
       console.log(courseId, adminEmail);
       console.log("Course approved:", response.data);
@@ -192,9 +192,9 @@ export const CourseProvider = ({ children }) => {
   const rejectCourse = async (courseId, adminEmail) => {
     try {
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reject-course`,
-        { courseId, adminEmail },
-        { withCredentials: true }
+        `${NEXT_PUBLIC_API_URL}/api/auth/reject-course`,
+        { courseId, adminEmail }
+        // { withCredentials: true }
       );
       console.log("Course rejected:", response.data);
       // Optionally refresh the course list
@@ -210,8 +210,8 @@ export const CourseProvider = ({ children }) => {
   const viewStudents = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-all-students`,
-        { withCredentials: true }
+        `${NEXT_PUBLIC_API_URL}/api/auth/get-all-students`
+        // { withCredentials: true }
       );
       setGetData(response.data);
       return response.data;
@@ -226,9 +226,9 @@ export const CourseProvider = ({ children }) => {
     try {
       // Call backend logout
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+        `${NEXT_PUBLIC_API_URL}/api/auth/logout`
 
-        { withCredentials: true }
+        // { withCredentials: true }
       );
 
       // Clear frontend state
@@ -254,8 +254,8 @@ export const CourseProvider = ({ children }) => {
   const MyEnrolledCourses = async (userId) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-own-courses/${userId}`,
-        { withCredentials: true }
+        `${NEXT_PUBLIC_API_URL}/api/auth/get-own-courses/${userId}`
+        // /{ withCredentials: true }
       );
       console.log("enrolled courses user id ", userId);
 
@@ -270,7 +270,7 @@ export const CourseProvider = ({ children }) => {
   const postEnrolledCourse = async (courseId, userId) => {
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/enrolled`,
+        `${NEXT_PUBLIC_API_URL}/api/auth/enrolled`,
         {
           courseId,
           userId,
