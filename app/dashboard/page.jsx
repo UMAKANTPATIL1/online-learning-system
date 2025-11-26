@@ -10,6 +10,8 @@ import ViewCourses from "@/component/viewCourse/page";
 import ViewEnrolledStudents from "@/component/viewEnrolledStudents/page";
 import ViewInstructor from "@/component/viewInstructors/page";
 import ViewStudents from "@/component/viewStudents/page";
+import Middleware from "@/middleware";
+import Protected from "@/middleware";
 import Cookies from "js-cookie";
 
 import React, { useEffect, useState } from "react";
@@ -118,18 +120,20 @@ const Dashboard = () => {
       : studentComponents;
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar navList={navList} onSelect={setSelectedIndex} />
+    <Middleware>
+      <div className="flex h-screen overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar navList={navList} onSelect={setSelectedIndex} />
 
-      {/* Main Content */}
-      <div className="flex-1 ml-0 md:ml-64 overflow-y-auto px-4 py-4 bg-gray-50">
-        {/* {isAuthenticated && <Navbar />} */}
-        <div className="rounded-2xl border border-gray-200 shadow-md p-4 bg-white">
-          {componentsToRender[selectedIndex]}
+        {/* Main Content */}
+        <div className="flex-1 ml-0 md:ml-64 overflow-y-auto px-4 py-4 bg-gray-50">
+          {/* {isAuthenticated && <Navbar />} */}
+          <div className="rounded-2xl border border-gray-200 shadow-md p-4 bg-white">
+            {componentsToRender[selectedIndex]}
+          </div>
         </div>
       </div>
-    </div>
+    </Middleware>
   );
 };
 

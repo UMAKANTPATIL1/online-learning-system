@@ -78,8 +78,8 @@ export const CourseProvider = ({ children }) => {
         {
           email: credentials.email,
           password: credentials.password, // must be sent for login
-        },
-        { withCredentials: true } // allow cookies (JWT in HttpOnly cookie)
+        }
+        // { withCredentials: true } // allow cookies (JWT in HttpOnly cookie)
       );
 
       if (response.status === 200) {
