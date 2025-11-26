@@ -1,10 +1,20 @@
 import { NextResponse } from "next/server";
 
 export function middleware(request) {
+  // Read token from cookie
   const token = request.cookies.get("token")?.value;
+
+  // Or from Authorization header
+  const authHeader = request.headers.get("authorization");
+  const headerToken = authHeader?.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : null;
+
+  const finalToken = token || headerToken;
+
   const { pathname } = request.nextUrl;
 
-  console.log("Middleware token-", token);
+  console.log("Middleware Token:", finalToken);
 
   const isPublicPath =
     pathname === "/" ||
@@ -14,7 +24,7 @@ export function middleware(request) {
     pathname.startsWith("/images") ||
     pathname.startsWith("/favicon");
 
-  if (isPublicPath || token) {
+  if (isPublicPath || finalToken) {
     return NextResponse.next();
   }
 
