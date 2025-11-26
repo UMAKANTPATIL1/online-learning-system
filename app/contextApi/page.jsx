@@ -14,7 +14,7 @@ export const CourseProvider = ({ children }) => {
   const [instructors, setInstructors] = useState([]);
   const router = useRouter();
   // const backendUrl = "https://lms-production-9f83.up.railway.app";
-
+  const NEXT_PUBLIC_API_URL = "https://lms-production-9f83.up.railway.app";
   // 📌 Restore user from localStorage on refresh
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -68,7 +68,8 @@ export const CourseProvider = ({ children }) => {
   };
 
   //  Login handler
-  const NEXT_PUBLIC_API_URL = "https://lms-production-9f83.up.railway.app";
+
+  // const NEXT_PUBLIC_API_URL = "http://localhost:8082";
   const login = async (credentials, setShowModal) => {
     try {
       console.log(`API URL: ${NEXT_PUBLIC_API_URL}`);

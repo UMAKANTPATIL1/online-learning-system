@@ -5,13 +5,13 @@ import MyOwnEnrolledCourses from "@/component/enrolledOwnCourses/page";
 import HomePage from "@/component/HomePage/page";
 import Navbar from "@/component/navbar/page";
 import PendingCourse from "@/component/pendingCourse/page";
+import ProtectedClient from "@/component/protectedClient/page";
 import Sidebar from "@/component/sidebar/page";
 import ViewCourses from "@/component/viewCourse/page";
 import ViewEnrolledStudents from "@/component/viewEnrolledStudents/page";
 import ViewInstructor from "@/component/viewInstructors/page";
 import ViewStudents from "@/component/viewStudents/page";
-import Middleware from "@/middleware";
-import Protected from "@/middleware";
+
 import Cookies from "js-cookie";
 
 import React, { useEffect, useState } from "react";
@@ -120,7 +120,7 @@ const Dashboard = () => {
       : studentComponents;
 
   return (
-    <Middleware>
+    <ProtectedClient>
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar */}
         <Sidebar navList={navList} onSelect={setSelectedIndex} />
@@ -133,7 +133,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </Middleware>
+    </ProtectedClient>
   );
 };
 
