@@ -108,7 +108,7 @@ const MyOwnEnrolledCourses = () => {
       for (const enrolled of getData) {
         try {
           const res = await axios.get(
-            "https://lms-production-9f83.up.railway.app",
+            "https://lms-production-9f83.up.railway.app/api/auth/progress-percent",
             {
               params: {
                 userId,
