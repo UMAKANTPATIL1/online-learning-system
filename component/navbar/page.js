@@ -50,22 +50,9 @@ const Navbar = ({ navList }) => {
   }, []);
 
   const handleLogoutClick = () => {
-    const token = Cookies.get("token");
+    const token = localStorage.getItem("token");
 
     if (token) {
-      // ✅ Correctly remove by key (not value)
-      // Cookies.remove("token", { path: "/" });
-      // // Cookies.remove("name", { path: "/" });
-      // Cookies.remove("role", { path: "/" });
-      // // Cookies.remove("image", { path: "/" });
-      // localStorage.removeItem("token");
-      // localStorage.removeItem("role");
-      // localStorage.removeItem("id");
-
-      // setIsAuthenticated(false);
-      // setUser({ name: "", image: "" });
-
-      // router.push("/");
       logout();
 
       // router.refresh(); // optional, if you need hard refresh

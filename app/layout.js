@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-amber-100`}
+        className={`${geistSans.variable} ${geistMono.variable}  bg-amber-300 min-h-screen`}
       >
         <Suspense>
           <CourseProvider>

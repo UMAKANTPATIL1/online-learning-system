@@ -15,6 +15,7 @@ export const CourseProvider = ({ children }) => {
   const router = useRouter();
   // const backendUrl = "https://lms-production-9f83.up.railway.app";
   const NEXT_PUBLIC_API_URL = "https://lms-production-9f83.up.railway.app";
+  // const NEXT_PUBLIC_API_URL = "http://localhost:8082";
   // 📌 Restore user from localStorage on refresh
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -24,6 +25,24 @@ export const CourseProvider = ({ children }) => {
     }
   }, []);
 
+  // const courseProgressHandler = async (userId, courseId, totalVideos) => {
+  //   try {
+  //     const res = await axios.get(
+  //       `${NEXT_PUBLIC_API_URL}/api/auth/progress-percent`,
+  //       {
+  //         params: {
+  //           userId,
+  //           courseId,
+  //           totalVideos,
+  //         },
+  //       }
+  //     );
+  //     console.log("courseid ", courseId);
+  //     // Percentage
+  //   } catch (err) {
+  //     console.error("Error fetching progress:", err);
+  //   }
+  // };
   // 📌 Fetch all courses
   const getAllCourses = async () => {
     try {
@@ -100,9 +119,7 @@ export const CourseProvider = ({ children }) => {
           token,
           id: userId,
         };
-        // Cookies.set("token", token, { path: "/", sameSite: "Strict" });
-        // Cookies.set("role", normalizedRole, { path: "/", sameSite: "Strict" });
-        // Cookies.set("userId", userId, { path: "/", sameSite: "Strict" });
+
         toast.success(`${normalizedRole} login successful!`);
 
         // save in state + localStorage
@@ -224,27 +241,19 @@ export const CourseProvider = ({ children }) => {
   // 📌 Logout handler
   const logout = async () => {
     try {
-      // Call backend logout
-      await axios.post(
-        `${NEXT_PUBLIC_API_URL}/api/auth/logout`
-
-        // { withCredentials: true }
-      );
-
       // Clear frontend state
       setUser(null);
       setInstructors([]);
 
       // Extra cleanup (in case)
       console.log("get token in context:", localStorage.getItem("token"));
+
+      // localStorage.clear();
       localStorage.removeItem("token");
       localStorage.removeItem("role");
-      localStorage.removeItem("userId");
-      Cookies.remove("token", { path: "/" });
-      Cookies.remove("role", { path: "/" });
-      Cookies.remove("userId", { path: "/" });
+      localStorage.removeItem("id");
+      localStorage.removeItem("user");
 
-      // Redirect
       router.push("/");
     } catch (err) {
       console.error("Logout failed:", err);
@@ -284,6 +293,20 @@ export const CourseProvider = ({ children }) => {
       toast.error("Failed to enroll in course.");
     }
   };
+
+  const handleVideoTracker = async (userId, courseId, videoUrl, progress) => {
+    try {
+      await axios.post(`${NEXT_PUBLIC_API_URL}/api/auth/progress`, {
+        userId,
+        courseId,
+        videoUrl,
+        progress,
+      });
+      if (progress >= 95) toast.success("Video marked as completed!");
+    } catch (err) {
+      console.error("Error updating progress", err);
+    }
+  };
   return (
     <CourseContext.Provider
       value={{
@@ -303,6 +326,7 @@ export const CourseProvider = ({ children }) => {
         viewStudents,
         MyEnrolledCourses,
         postEnrolledCourse,
+        handleVideoTracker,
       }}
     >
       {children}

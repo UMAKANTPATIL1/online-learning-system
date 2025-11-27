@@ -108,7 +108,7 @@ const MyOwnEnrolledCourses = () => {
       for (const enrolled of getData) {
         try {
           const res = await axios.get(
-            "http://localhost:8082/api/auth/progress-percent",
+            "https://lms-production-9f83.up.railway.app",
             {
               params: {
                 userId,
@@ -117,10 +117,10 @@ const MyOwnEnrolledCourses = () => {
               },
             }
           );
-          console.log("courseid ", enrolled.course?.id);
+          console.log("getData ", getData);
           progressData[enrolled.course?.id] = res.data.toFixed(1); // Percentage
         } catch (err) {
-          console.error("Error fetching progress:", err);
+          console.error("Error fetching progress:", err.message);
         }
       }
       setProgressMap(progressData);
@@ -171,29 +171,51 @@ const MyOwnEnrolledCourses = () => {
                 {/* Progress */}
                 <div className="mt-3">
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Progress</span>
+                    {progress == 100.0 ? (
+                      <span>Completed</span>
+                    ) : (
+                      <span>Progress</span>
+                    )}
                     <span>{progress}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                      // className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                      className={`${
+                        progress == 100.0 ? "bg-green-500" : "bg-blue-600"
+                      } h-2 rounded-full transition-all duration-500 `}
                       style={{ width: `${progress}%` }}
                     />
                   </div>
                 </div>
                 {/* Continue button */}
-                <button
-                  className="bg-blue-500 hover:bg-blue-700 mt-4 text-white px-4 py-2 rounded-lg transition"
-                  onClick={() =>
-                    router.push(
-                      `/course/${course?.courseTitle
-                        ?.toLowerCase()
-                        ?.replace(/\s+/g, "-")}`
-                    )
-                  }
-                >
-                  Continue Learning
-                </button>
+                {progress == 100.0 ? (
+                  <button
+                    className="bg-green-500 hover:bg-green-600 mt-4 text-white px-4 py-2 rounded-lg transition"
+                    onClick={() =>
+                      router.push(
+                        `/course/${course?.courseTitle
+                          ?.toLowerCase()
+                          ?.replace(/\s+/g, "-")}`
+                      )
+                    }
+                  >
+                    Completed
+                  </button>
+                ) : (
+                  <button
+                    className="bg-blue-500 hover:bg-blue-700 mt-4 text-white px-4 py-2 rounded-lg transition"
+                    onClick={() =>
+                      router.push(
+                        `/course/${course?.courseTitle
+                          ?.toLowerCase()
+                          ?.replace(/\s+/g, "-")}`
+                      )
+                    }
+                  >
+                    Continue Learning
+                  </button>
+                )}
               </div>
             );
           })}

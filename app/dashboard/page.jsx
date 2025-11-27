@@ -94,13 +94,13 @@ const Dashboard = () => {
     <div key="my-payments">💰 My payment history goes here</div>,
     <div key="settings">⚙️ User settings form goes here</div>,
   ];
-  // const token = Cookies.get("token");
-  // const role = Cookies.get("role")?.toLowerCase();
+
   const role = localStorage.getItem("role");
 
+  const token = localStorage.getItem("token");
   useEffect(() => {
-    const token = Cookies.get("token");
-    const role = Cookies.get("role")?.toLowerCase();
+    token;
+    role;
     setIsAuthenticated(!!token);
   }, []);
 
@@ -118,15 +118,20 @@ const Dashboard = () => {
       : role === "instructor"
       ? instructorComponents
       : studentComponents;
-
+  const [open, setOpen] = useState(false);
   return (
     <ProtectedClient>
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar */}
-        <Sidebar navList={navList} onSelect={setSelectedIndex} />
+        <Sidebar
+          navList={navList}
+          onSelect={setSelectedIndex}
+          setOpen={setOpen}
+          open={open}
+        />
 
         {/* Main Content */}
-        <div className="flex-1 ml-0 md:ml-64 overflow-y-auto px-4 py-4 bg-gray-50">
+        <div className="flex-1 ml-0 md:ml-auto overflow-y-auto px-4 py-4 bg-gray-50">
           {/* {isAuthenticated && <Navbar />} */}
           <div className="rounded-2xl border border-gray-200 shadow-md p-4 bg-white">
             {componentsToRender[selectedIndex]}
