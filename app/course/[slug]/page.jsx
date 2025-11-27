@@ -149,12 +149,15 @@ export default function CourseDetails() {
     const fetchWatchedVideos = async () => {
       if (!userId || !course) return;
       try {
-        const res = await axios.get("http://localhost:8082/api/auth/progress", {
-          params: {
-            userId,
-            courseId: course.id,
-          },
-        });
+        const res = await axios.get(
+          "https://lms-production-9f83.up.railway.app/api/auth/progress",
+          {
+            params: {
+              userId,
+              courseId: course.id,
+            },
+          }
+        );
         // Assume API returns array of videoUrls with completed progress
         const completedVideos = res.data
           .filter((v) => v.progress === 100)
@@ -177,13 +180,16 @@ export default function CourseDetails() {
       (videoRef.current.currentTime / videoRef.current.duration) * 100;
 
     try {
-      await axios.post("http://localhost:8082/api/auth/update", {
-        userId,
-        courseId: course.id,
-        videoUrl: currentVideo.videoUrl,
-        videoTitle: currentVideo.videoTitle,
-        progress,
-      });
+      await axios.post(
+        "https://lms-production-9f83.up.railway.app/api/auth/update",
+        {
+          userId,
+          courseId: course.id,
+          videoUrl: currentVideo.videoUrl,
+          videoTitle: currentVideo.videoTitle,
+          progress,
+        }
+      );
     } catch (err) {
       console.error("Error updating video progress:", err);
     }
@@ -194,13 +200,16 @@ export default function CourseDetails() {
     if (!currentVideo) return;
 
     try {
-      await axios.post("http://localhost:8082/api/auth/update", {
-        userId,
-        courseId: course.id,
-        videoUrl: currentVideo.videoUrl,
-        videoTitle: currentVideo.videoTitle,
-        progress: 100,
-      });
+      await axios.post(
+        "https://lms-production-9f83.up.railway.app/api/auth/update",
+        {
+          userId,
+          courseId: course.id,
+          videoUrl: currentVideo.videoUrl,
+          videoTitle: currentVideo.videoTitle,
+          progress: 100,
+        }
+      );
 
       if (!watchedVideos.includes(currentVideo.videoUrl)) {
         setWatchedVideos((prev) => [...prev, currentVideo.videoUrl]);

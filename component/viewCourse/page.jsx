@@ -47,7 +47,7 @@ const ViewCourses = () => {
   const handleDelete = async (courseId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8082/api/auth/delete/${courseId}`
+        `https://lms-production-9f83.up.railway.app/api/auth/delete/${courseId}`
       );
 
       if (response.status === 200) {

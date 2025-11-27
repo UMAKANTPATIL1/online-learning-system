@@ -65,7 +65,7 @@ const CreateCourses = () => {
       setUploadProgress(0);
 
       const res = await axios.post(
-        `http://localhost:8082/api/auth/create-course/${user.email}`,
+        `https://lms-production-9f83.up.railway.app/api/auth/create-course/${user.email}`,
         data,
         {
           headers: { "Content-Type": "multipart/form-data" },
