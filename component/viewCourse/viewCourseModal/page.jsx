@@ -1,5 +1,6 @@
 import { useCourse } from "@/app/contextApi/page";
 import Modal from "@/component/modal/page";
+import { Truncated } from "@/component/truncate/page";
 import React from "react";
 
 const CourseModal = ({ course, onClose, userId }) => {
@@ -13,7 +14,7 @@ const CourseModal = ({ course, onClose, userId }) => {
     onClose();
   };
   return (
-    <Modal onClose={onClose} modalBgColor="bg-gray-100">
+    <Modal onClose={onClose} modalBgColor="bg-gray-100  ">
       {/* Header */}
       <div className="flex flex-col items-center text-center">
         {/* userid={user?.id} */}
@@ -33,9 +34,12 @@ const CourseModal = ({ course, onClose, userId }) => {
       {/* Info Section */}
       <div className="mt-6 bg-white rounded-lg shadow-sm p-5 divide-y divide-gray-200">
         {/* Description */}
-        <p className="text-gray-700 text-base leading-relaxed pb-4">
-          {course.courseDescription || "No description provided."}
-        </p>
+        <div className="mb-4">
+          <p className=" text-base leading-relaxed pb-4  overflow-y-auto max-h-50">
+            {/* {course.courseDescription || "No description provided."} */}
+            <Truncated text={course.courseDescription} limit={250} />
+          </p>
+        </div>
 
         {/* Instructor */}
         <div className="flex justify-between items-center py-3">

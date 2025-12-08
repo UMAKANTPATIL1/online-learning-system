@@ -226,7 +226,9 @@ export default function CourseDetails() {
         size={36}
         className="cursor-pointer hover:text-gray-800 mb-4"
       />
-      <h1 className="text-3xl font-bold mb-4">{course.courseTitle}</h1>
+      <div className="flex items-center mb-4">
+        <h1 className="text-3xl font-bold mb-4">{course.courseTitle}</h1>
+      </div>
 
       <div className="grid md:grid-cols-3 gap-6">
         {/* Video player */}
@@ -236,7 +238,7 @@ export default function CourseDetails() {
               ref={videoRef}
               src={currentVideo.videoUrl}
               controls
-              className="w-full rounded-lg"
+              className="w-full h-80 rounded-lg"
               onTimeUpdate={handleProgress}
               onEnded={handleVideoEnd}
             />
@@ -266,6 +268,12 @@ export default function CourseDetails() {
               </li>
             ))}
           </ul>
+        </div>
+        <div className=" flex flex-col bg-white p-2  shadow mt-4 md:col-span-3">
+          <h2 className="font-semibold text-gray-800 mb-2">
+            Course Description
+          </h2>
+          <p className="text-gray-700">{course.courseDescription}</p>
         </div>
       </div>
     </div>

@@ -7,6 +7,8 @@ import Cookies from "js-cookie";
 import { Sidebar } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import logo from "../../public/assets/logo.png";
+import Image from "next/image";
 
 const Navbar = ({ navList }) => {
   const { logout } = useCourse();
@@ -63,9 +65,16 @@ const Navbar = ({ navList }) => {
   };
 
   return (
-    <div className="bg-white text-black p-4 shadow-md sticky top-0 z-50">
+    <div className="bg-white text-black p-4 shadow-md  sticky top-0 z-50">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Logo</h1>
+        <div className="h-10 flex items-center">
+          <Image
+            src={logo}
+            alt="LearnSphere Logo"
+            className="h-32 w-auto object-cover"
+          />
+        </div>
+
         {/* {isAuthenticated && <Sidebar navList={navList} />} */}
 
         <div className="flex items-center space-x-8">
