@@ -71,14 +71,14 @@ const Carousel = () => {
           <img
             src={item.imageUrl}
             alt={`Slide ${index + 1}`}
-            className="w-full h-[500px] object-cover"
+            className="w-full h-[300px] md:h-[500px] object-cover"
           />
           <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-center text-white px-4">
-            <h2 className="text-3xl md:text-4xl font-bold mb-2">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
               {item.title}
             </h2>
-            <p className="text-lg md:text-xl mb-4">{item.description}</p>
-            <button className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-md text-white font-medium">
+            <p className="text-sm md:text-lg lg:text-xl mb-4">{item.description}</p>
+            <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 md:px-6 md:py-2 rounded-md text-white font-medium text-sm md:text-base">
               {item.buttonText}
             </button>
           </div>

@@ -10,6 +10,7 @@ import Navbar from "@/component/navbar/page";
 import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
 import { Footer } from "@/component/footer/page";
+import ProtectedClient from "@/component/protectedClient/page";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,12 +39,14 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable}  bg-amber-300 min-h-screen`}
       >
         <Suspense>
+          {/* <ProtectedClient> */}
           <CourseProvider>
             <Navbar navList={navList} />
             <Toaster className="swiper-centered" />
             <main>{children}</main>
           </CourseProvider>
           <Footer />
+          {/* </ProtectedClient> */}
         </Suspense>
       </body>
     </html>
