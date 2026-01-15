@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 export const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-300 pt-12 pb-6 mt-10">
+    <footer className="bg-gray-900 text-gray-300 pt-12 pb-6 mt-10 relative z-10 clear-both">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
         {/* About Section */}
         <div>

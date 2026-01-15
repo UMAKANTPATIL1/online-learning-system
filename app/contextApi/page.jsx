@@ -14,21 +14,28 @@ export const CourseProvider = ({ children }) => {
   const [instructors, setInstructors] = useState([]);
   const router = useRouter();
   // const backendUrl = "https://lms-production-9f83.up.railway.app";
-  // const NEXT_PUBLIC_API_URL = "https://lms-production-9f83.up.railway.app";
-  const NEXT_PUBLIC_API_URL = "http://localhost:8082";
+  //   const process.env.NEXT_PUBLIC_API_URL = "https://lms-production-9f83.up.railway.app";
+  // const process.env.NEXT_PUBLIC_API_URL = "http://localhost:8082";
   // 📌 Restore user from localStorage on refresh
+  console.log(process.env.NEXT_PUBLIC_API_URL);
+  // useEffect(() => {
+  //   const savedUser = localStorage.getItem("user");
+  //   console.log("Saved user from localStorage:", savedUser);
+  //   if (savedUser) {
+  //     setUser(JSON.parse(savedUser));
+  //   }
+  // }, []);
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    console.log("Saved user from localStorage:", savedUser);
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
   }, []);
 
   // const courseProgressHandler = async (userId, courseId, totalVideos) => {
   //   try {
   //     const res = await axios.get(
-  //       `${NEXT_PUBLIC_API_URL}/api/auth/progress-percent`,
+  //       `${process.env.NEXT_PUBLIC_API_URL}/api/auth/progress-percent`,
   //       {
   //         params: {
   //           userId,
@@ -44,10 +51,11 @@ export const CourseProvider = ({ children }) => {
   //   }
   // };
   // 📌 Fetch all courses
+
   const getAllCourses = async () => {
     try {
       const response = await axios.get(
-        `${NEXT_PUBLIC_API_URL}/api/auth/get-courses`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-courses`
       );
       setGetData(response.data);
     } catch (error) {
@@ -59,10 +67,10 @@ export const CourseProvider = ({ children }) => {
   const fetchAllInstructors = async () => {
     try {
       const response = await axios.get(
-        `${NEXT_PUBLIC_API_URL}/api/auth/get-all-instructor`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-all-instructor`
         // { withCredentials: true }
       );
-      console.log(response.data);
+      console.log("all instructors", response.data);
       setInstructors(response.data);
       return response.data;
     } catch (error) {
@@ -88,13 +96,13 @@ export const CourseProvider = ({ children }) => {
 
   //  Login handler
 
-  // const NEXT_PUBLIC_API_URL = "http://localhost:8082";
+  // const process.env.NEXT_PUBLIC_API_URL = "http://localhost:8082";
   const login = async (credentials, setShowModal) => {
     try {
-      console.log(`API URL: ${NEXT_PUBLIC_API_URL}`);
+      // console.log(`API URL: ${process.env.NEXT_PUBLIC_API_URL}`);
 
       const response = await axios.post(
-        `${NEXT_PUBLIC_API_URL}/api/auth/login`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
         {
           email: credentials.email,
           password: credentials.password, // must be sent for login
@@ -104,7 +112,7 @@ export const CourseProvider = ({ children }) => {
 
       if (response.status === 200) {
         // destructure safely
-        const { token, role, userId, email } = response.data;
+        const { token, role, userId, email, name, imageUrl } = response.data;
 
         if (!token) {
           throw new Error("No token received from backend");
@@ -117,7 +125,9 @@ export const CourseProvider = ({ children }) => {
           email: credentials.email,
           role: normalizedRole,
           token,
-          id: userId,
+          id: userId || localStorage.getItem("id") || Cookies.get("id"),
+          name: name || "",
+          image: imageUrl || "",
         };
 
         toast.success(`${normalizedRole} login successful!`);
@@ -130,6 +140,8 @@ export const CourseProvider = ({ children }) => {
         localStorage.setItem("role", normalizedRole);
         localStorage.setItem("id", userId);
         localStorage.setItem("user", JSON.stringify(newUser));
+        localStorage.setItem("name", name);
+        localStorage.setItem("image", imageUrl);
 
         setError(null);
 
@@ -147,7 +159,7 @@ export const CourseProvider = ({ children }) => {
   const pendingCourses = async () => {
     try {
       const response = await axios.get(
-        `${NEXT_PUBLIC_API_URL}/api/auth/pending-courses`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/pending-courses`
         // { withCredentials: true }
       );
       console.log("Pending courses fetched:", response.data);
@@ -173,7 +185,7 @@ export const CourseProvider = ({ children }) => {
   const viewEnrolledStudents = async (courseId) => {
     try {
       const response = await axios.get(
-        `${NEXT_PUBLIC_API_URL}/api/auth/get-all-enrolled-user`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-all-enrolled-user`
         // { withCredentials: true }
       );
       console.log("enrolled students:", response.data);
@@ -190,7 +202,7 @@ export const CourseProvider = ({ children }) => {
     console.log("object", courseId, adminEmail);
     try {
       const response = await axios.put(
-        `${NEXT_PUBLIC_API_URL}/api/auth/approve-course`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/approve-course`,
         { courseId, adminEmail }
         // { withCredentials: true }
       );
@@ -209,7 +221,7 @@ export const CourseProvider = ({ children }) => {
   const rejectCourse = async (courseId, adminEmail) => {
     try {
       const response = await axios.put(
-        `${NEXT_PUBLIC_API_URL}/api/auth/reject-course`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reject-course`,
         { courseId, adminEmail }
         // { withCredentials: true }
       );
@@ -227,8 +239,8 @@ export const CourseProvider = ({ children }) => {
   const viewStudents = async () => {
     try {
       const response = await axios.get(
-        `${NEXT_PUBLIC_API_URL}/api/auth/get-all-students`
-        // { withCredentials: true }
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-all-students`,
+        { withCredentials: true }
       );
       setGetData(response.data);
       return response.data;
@@ -241,18 +253,16 @@ export const CourseProvider = ({ children }) => {
   // 📌 Logout handler
   const logout = async () => {
     try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+        {},
+        { withCredentials: true } // ⚡ include cookies
+      );
+
       // Clear frontend state
       setUser(null);
       setInstructors([]);
-
-      // Extra cleanup (in case)
-      console.log("get token in context:", localStorage.getItem("token"));
-
-      // localStorage.clear();
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      localStorage.removeItem("id");
-      localStorage.removeItem("user");
+      localStorage.clear();
 
       router.push("/");
     } catch (err) {
@@ -263,7 +273,7 @@ export const CourseProvider = ({ children }) => {
   const MyEnrolledCourses = async (userId) => {
     try {
       const response = await axios.get(
-        `${NEXT_PUBLIC_API_URL}/api/auth/get-own-courses/${userId}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-own-courses/${userId}`
         // /{ withCredentials: true }
       );
       console.log("enrolled courses user id ", userId);
@@ -279,7 +289,7 @@ export const CourseProvider = ({ children }) => {
   const postEnrolledCourse = async (courseId, userId) => {
     try {
       const response = await axios.post(
-        `${NEXT_PUBLIC_API_URL}/api/auth/enrolled`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/enrolled`,
         {
           courseId,
           userId,
@@ -296,7 +306,7 @@ export const CourseProvider = ({ children }) => {
 
   const handleVideoTracker = async (userId, courseId, videoUrl, progress) => {
     try {
-      await axios.post(`${NEXT_PUBLIC_API_URL}/api/auth/progress`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/progress`, {
         userId,
         courseId,
         videoUrl,

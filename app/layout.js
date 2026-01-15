@@ -30,25 +30,25 @@ const navList = [
   { label: "Home", href: "/" },
   { label: "Contact us", href: "/contact-us" },
   { label: "About", href: "/about" },
-  { label: "Log in", href: "/" },
 ];
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable}  bg-amber-300 min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable}  bg-amber-300 min-h-screen flex flex-col`}
       >
         <Suspense>
           {/* <ProtectedClient> */}
           <CourseProvider>
             <Navbar navList={navList} />
             <Toaster className="swiper-centered" />
-            <main>{children}</main>
+            <main className="flex-1 w-full">{children}</main>
           </CourseProvider>
           <Footer />
           {/* </ProtectedClient> */}
         </Suspense>
       </body>
+
     </html>
   );
 }

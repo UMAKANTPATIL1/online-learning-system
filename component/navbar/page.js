@@ -2,190 +2,114 @@
 
 import { useCourse } from "@/app/contextApi/page";
 import Login from "@/app/login/page";
-import Register from "@/app/register/page";
-import Cookies from "js-cookie";
-import { Sidebar, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import logo from "../../public/assets/logo.png";
 import Image from "next/image";
+import logo from "../../public/assets/logo.png";
 
 const Navbar = ({ navList }) => {
-  const { logout } = useCourse();
-
+  const { logout, user } = useCourse();
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState({ name: "", image: "" });
   const searchParams = useSearchParams();
-  // const router = useRouter();
+
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const showLogin = searchParams.get("showLogin");
-
-    if (showLogin === "true") {
+    if (searchParams.get("showLogin") === "true") {
       setShowModal(true);
-
-      router.replace("/", { scroll: false });
+      router.replace("/", { scroll: true });
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem("token");
-      const name = Cookies.get("name");
-      const image = Cookies.get("image");
-
-      setIsAuthenticated(!!token);
-
-      if (token && name) {
-        setUser({ name, image: image || "" });
-      } else {
-        setUser({ name: "", image: "" });
-      }
-    };
-
-    checkAuth();
-
-    const interval = setInterval(checkAuth, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleLogoutClick = () => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      logout();
-
-      // router.refresh(); // optional, if you need hard refresh
-    } else {
-      setShowModal(true);
-      router.push("/?showLogin=true");
-    }
-  };
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+  const handleLogout = () => {
+    logout(); // context logout
+    setIsProfileOpen(false);
   };
 
   return (
-    <div className="bg-white text-black p-4 shadow-md sticky top-0 z-50">
-      <div className="flex items-center justify-between">
-        <div
-          className="h-10 flex items-center -mx-6 cursor-pointer"
-          onClick={() => router.push("/")}
-        >
+    <div className="bg-white shadow-md sticky top-0 z-50 px-6 py-4">
+      <div className="h-10 flex items-center justify-between">
+        {/* Logo (INCREASED SIZE) */}
+        <div className="cursor-pointer" onClick={() => router.push("/")}>
           <Image
             src={logo}
-            alt="LearnSphere Logo"
-            className="h-32 w-auto object-cover"
+            alt="Logo"
+            className="h-32 w-auto object-cover" // ⬅ increased size
+            priority
           />
         </div>
 
-        {/* Mobile Menu Button - Visible usually on small screens */}
-        <div className="md:hidden">
-          <button
-            onClick={toggleMobileMenu}
-            className="text-black focus:outline-none"
-          >
-            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+        {/* Right Side (NavList + Profile/Login) */}
+        <div className="hidden md:flex items-center space-x-10">
+          {/* Nav List */}
+          <ul className="flex space-x-8 font-semibold">
+            {navList.map((item, idx) => (
+              <li key={idx}>
+                <a href={item.href} className="hover:text-blue-600 transition">
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          {/* Auth Section */}
+          <div className="relative">
+            {user ? (
+              <>
+                <img
+                  src={user.image || "/assets/default-avatar.png"}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full cursor-pointer"
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                />
+
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-3 w-48 bg-white border rounded-md shadow-md p-3">
+                    <p className="text-sm mb-3">👋 {user.name}</p>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left text-red-500 hover:bg-red-50 px-2 py-1 rounded"
+                    >
+                      Log Out
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <button
+                onClick={() => router.push("/?showLogin=true")}
+                className="bg-blue-500 text-white px-4 py-2 rounded-xl cursor-pointer hover:bg-blue-700"
+              >
+                Login
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Desktop Menu - Hidden on small screens */}
-        <div className="hidden md:flex items-center space-x-8">
-          <ul className="flex space-x-8 items-center font-semibold">
-            {navList.map((item, key) => {
-              const isLoginLink = item.label.toLowerCase() === "log in";
-              return (
-                <li key={key}>
-                  {isLoginLink ? (
-                    isAuthenticated ? (
-                      <div className="flex items-center space-x-3">
-                        <span className="text-sm">{user.name}</span>
-                        <button
-                          onClick={handleLogoutClick}
-                          className="text-black border-2 border-red-400 px-3 py-1 rounded-sm hover:bg-red-100 hover:text-black transition-all duration-300 ease-in-out cursor-pointer"
-                        >
-                          Log Out
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        className="text-black border-2 border-blue-400 px-4 py-1 rounded-sm hover:bg-blue-200 hover:text-black transition-all duration-300 ease-in-out cursor-pointer"
-                        onClick={handleLogoutClick}
-                      >
-                        Log In
-                      </button>
-                    )
-                  ) : (
-                    <a
-                      href={item.href}
-                      className="hover:text-blue-500 transition duration-200"
-                    >
-                      {item.label}
-                    </a>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <X /> : <Menu />}
+        </button>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden mt-4 pb-4">
-          <ul className="flex flex-col space-y-4 font-semibold">
-            {navList.map((item, key) => {
-              const isLoginLink = item.label.toLowerCase() === "log in";
-              return (
-                <li key={key} className="border-b border-gray-100 pb-2">
-                  {isLoginLink ? (
-                    isAuthenticated ? (
-                      <div className="flex flex-col space-y-3">
-                        <span className="text-sm text-gray-600">
-                          Signed in as {user.name}
-                        </span>
-                        <button
-                          onClick={() => {
-                            handleLogoutClick();
-                            setIsMobileMenuOpen(false);
-                          }}
-                          className="text-black border-2 border-red-400 px-3 py-1 rounded-sm hover:bg-red-100 w-full text-center"
-                        >
-                          Log Out
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        className="text-black border-2 border-blue-400 px-4 py-1 rounded-sm hover:bg-blue-200 w-full text-center"
-                        onClick={() => {
-                          handleLogoutClick();
-                          setIsMobileMenuOpen(false);
-                        }}
-                      >
-                        Log In
-                      </button>
-                    )
-                  ) : (
-                    <a
-                      href={item.href}
-                      className="block hover:text-blue-500 transition duration-200"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {item.label}
-                    </a>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+        <ul className="md:hidden mt-4 space-y-3 font-semibold">
+          {navList.map((item, idx) => (
+            <li key={idx}>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))}
+        </ul>
       )}
+
       {showModal && <Login setShowModal={setShowModal} />}
-      {/* {showModal && <Register setShowModal={setShowModal} />} */}
     </div>
   );
 };

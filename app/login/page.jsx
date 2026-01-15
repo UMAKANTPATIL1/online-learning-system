@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { useCourse } from "../contextApi/page";
 import Register from "../register/page";
 import { motion } from "framer-motion";
+import { FaGoogle } from "react-icons/fa";
+import { IoLogoGoogle } from "react-icons/io5";
 
 const Login = ({ setShowModal }) => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -17,6 +19,22 @@ const Login = ({ setShowModal }) => {
   const handleLogin = (e) => {
     e.preventDefault();
     login(credentials, setShowModal);
+  };
+  useEffect(() => {
+    fetch("http://localhost:8082/api/auth/me", {
+      credentials: "include",
+    }).then((res) => {
+      if (res.ok) {
+        router.push("/dashboard");
+      }
+    });
+  }, []);
+  const handleGoogleLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/google`;
+
+    const storeId = localStorage.getItem("id") || Cookies.get("id");
+    localStorage.setItem("id", storeId);
+    console.log("storeId", storeId);
   };
 
   useEffect(() => {
@@ -36,7 +54,7 @@ const Login = ({ setShowModal }) => {
   return (
     <Modal onClose={() => setShowModal(false)} modalBgColor="bg-white">
       {/* Toggle buttons with underline animation */}
-      <div className="relative flex mb-6 border-b border-gray-200">
+      <div className="relative flex mb-6 border-b border-gray-200 ">
         <button
           className={`flex-1 py-2 font-medium relative cursor-pointer ${
             isLogin ? "text-blue-600" : "text-gray-500"
@@ -113,6 +131,14 @@ const Login = ({ setShowModal }) => {
               Forget Password?{" "}
             </a>{" "}
           </p>
+          <div
+            className=" flex items-center justify-center w-1/2 mx-auto bg-gray-100 border-2 rounded-3xl cursor-pointer hover:bg-gray-200 transition-duration-100"
+            onClick={handleGoogleLogin}
+          >
+            <FaGoogle className="inline-block text-red-500 mr-2 " size={20} />
+
+            <span className="text-black py-2 ">Sign in with Google</span>
+          </div>
         </form>
       ) : (
         <Register />

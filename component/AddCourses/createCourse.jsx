@@ -3,6 +3,18 @@ import { useCourse } from "@/app/contextApi/page";
 import React, { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import {
+  Layout,
+  FileText,
+  Image as ImageIcon,
+  Video,
+  UploadCloud,
+  CheckCircle2,
+  X,
+  Loader2,
+  ListVideo,
+  Tag
+} from "lucide-react";
 
 const CreateCourses = () => {
   const { user } = useCourse();
@@ -15,6 +27,7 @@ const CreateCourses = () => {
   });
 
   const [thumbnail, setThumbnail] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [videos, setVideos] = useState([]);
   const [videoTitles, setVideoTitles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -28,17 +41,33 @@ const CreateCourses = () => {
     });
   };
 
-  const handleThumbnailChange = (e) => setThumbnail(e.target.files[0]);
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setThumbnail(file);
+      setThumbnailPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleVideoChange = (e) => {
     const files = Array.from(e.target.files);
-    setVideos(files);
-    setVideoTitles(files.map((f) => f.name.replace(/\.[^/.]+$/, ""))); // default video titles
+    if (files.length > 0) {
+      setVideos((prev) => [...prev, ...files]);
+      const newTitles = files.map((f) => f.name.replace(/\.[^/.]+$/, ""));
+      setVideoTitles((prev) => [...prev, ...newTitles]);
+    }
   };
 
   const handleVideoTitleChange = (index, value) => {
     const newTitles = [...videoTitles];
     newTitles[index] = value;
+    setVideoTitles(newTitles);
+  };
+
+  const removeVideo = (index) => {
+    const newVideos = videos.filter((_, i) => i !== index);
+    const newTitles = videoTitles.filter((_, i) => i !== index);
+    setVideos(newVideos);
     setVideoTitles(newTitles);
   };
 
@@ -65,7 +94,7 @@ const CreateCourses = () => {
       setUploadProgress(0);
 
       const res = await axios.post(
-        `https://lms-production-9f83.up.railway.app/api/auth/create-course/${user.email}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/create-course/${user.email}`,
         data,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -86,6 +115,7 @@ const CreateCourses = () => {
           published: false,
         });
         setThumbnail(null);
+        setThumbnailPreview(null);
         setVideos([]);
         setVideoTitles([]);
       }
@@ -98,113 +128,244 @@ const CreateCourses = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-50 to-gray-100 p-6">
-      <div className="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-lg border border-gray-200">
-        <h2 className="text-3xl font-bold mb-6 text-gray-900">
-          Add New Course
-        </h2>
+    <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <Layout className="w-8 h-8 text-blue-600" />
+            Create New Course
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Design your curriculum, upload content, and share your knowledge with the world.
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 text-black">
-          {/* Basic Info */}
-          <input
-            type="text"
-            name="courseTitle"
-            value={formData.courseTitle}
-            onChange={handleChange}
-            placeholder="Course Title"
-            className="w-full border rounded-lg p-3"
-          />
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* LEFT COLUMN - Course Info */}
+          <div className="lg:col-span-2 space-y-6">
 
-          <textarea
-            name="courseDescription"
-            value={formData.courseDescription}
-            onChange={handleChange}
-            placeholder="Course Description"
-            rows="3"
-            className="w-full border rounded-lg p-3"
-          />
+            {/* Basic Details Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+              <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 border-b border-gray-100 pb-4">
+                <FileText className="w-5 h-5 text-gray-500" />
+                Course Details
+              </h2>
 
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            placeholder="Category"
-            className="w-full border rounded-lg p-3"
-          />
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Course Title</label>
+                  <input
+                    type="text"
+                    name="courseTitle"
+                    value={formData.courseTitle}
+                    onChange={handleChange}
+                    placeholder="e.g. Advanced Web Development 2024"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all placeholder:text-gray-400"
+                    required
+                  />
+                </div>
 
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              name="published"
-              checked={formData.published}
-              onChange={handleChange}
-            />
-            <span>Publish immediately</span>
-          </label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <textarea
+                    name="courseDescription"
+                    value={formData.courseDescription}
+                    onChange={handleChange}
+                    placeholder="Describe what students will learn..."
+                    rows="5"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all placeholder:text-gray-400 resize-none"
+                    required
+                  />
+                </div>
 
-          {/* Thumbnail Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Upload Thumbnail
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleThumbnailChange}
-              className="mt-2 block w-full border p-2 rounded-lg"
-            />
-          </div>
-
-          {/* Video Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Upload Videos
-            </label>
-            <input
-              type="file"
-              accept="video/*"
-              multiple
-              onChange={handleVideoChange}
-              className="mt-2 block w-full border p-2 rounded-lg"
-            />
-          </div>
-
-          {/* Video Titles */}
-          {videos.map((video, index) => (
-            <div key={index} className="mt-2">
-              <label className="text-sm font-medium text-gray-600">
-                Title for: {video.name}
-              </label>
-              <input
-                type="text"
-                value={videoTitles[index] || ""}
-                onChange={(e) => handleVideoTitleChange(index, e.target.value)}
-                className="mt-1 w-full border rounded-lg p-2"
-              />
-            </div>
-          ))}
-
-          {/* Progress Bar */}
-          {isUploading && (
-            <div className="mt-4">
-              <div className="w-full bg-gray-200 h-3 rounded-full">
-                <div
-                  className="bg-blue-600 h-3 rounded-full"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <div className="relative">
+                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      placeholder="e.g. Programming, Design, Business"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all placeholder:text-gray-400"
+                      required
+                    />
+                  </div>
+                </div>
               </div>
-              <p className="text-sm text-center mt-1">{uploadProgress}%</p>
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={isUploading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg mt-4 cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isUploading ? "Uploading..." : "Create Course"}
-          </button>
+            {/* Curriculum / Videos Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                  <ListVideo className="w-5 h-5 text-gray-500" />
+                  Course Content
+                </h2>
+                <span className="text-sm text-gray-500">{videos.length} videos selected</span>
+              </div>
+
+              {/* Video Upload Area */}
+              <div className="relative group">
+                <input
+                  type="file"
+                  accept="video/*"
+                  multiple
+                  onChange={handleVideoChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                />
+                <div className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50 group-hover:bg-blue-50/30 group-hover:border-blue-300 transition-all">
+                  <div className="p-3 bg-white rounded-full shadow-sm mb-3">
+                    <Video className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <p className="text-sm font-medium text-gray-700">Drop videos here or click to upload</p>
+                  <p className="text-xs text-gray-500 mt-1">MP4, MOV, MKV up to 500MB</p>
+                </div>
+              </div>
+
+              {/* Video List */}
+              <div className="space-y-3">
+                {videos.map((video, index) => (
+                  <div key={index} className="flex flex-col sm:flex-row gap-3 bg-white p-3 rounded-xl border border-gray-200 hover:border-blue-200 transition-colors">
+                    <div className="flex items-center justify-center w-12 h-12 bg-blue-50 rounded-lg shrink-0">
+                      <Video className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 truncate mb-1">Source: {video.name}</p>
+                      <input
+                        type="text"
+                        value={videoTitles[index] || ""}
+                        onChange={(e) => handleVideoTitleChange(index, e.target.value)}
+                        placeholder="Enter video title"
+                        className="w-full px-3 py-1.5 text-sm font-medium text-gray-900 border-b border-gray-200 focus:border-blue-500 outline-none bg-transparent transition-all placeholder:font-normal"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeVideo(index)}
+                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors self-start sm:self-center"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))}
+                {videos.length === 0 && (
+                  <div className="text-center py-6 text-gray-400 text-sm">
+                    No videos added yet. Start adding content to your course.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN - Settings & Sidebar */}
+          <div className="space-y-6">
+
+            {/* Publishing Options */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Publishing</h2>
+              <label className="flex items-start gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors">
+                <div className="relative flex items-center">
+                  <input
+                    type="checkbox"
+                    name="published"
+                    checked={formData.published}
+                    onChange={handleChange}
+                    className="w-5 h-5 border-gray-300 text-blue-600 focus:ring-blue-500 rounded"
+                  />
+                </div>
+                <div>
+                  <span className="block text-sm font-medium text-gray-900">Publish Immediately</span>
+                  <span className="block text-xs text-gray-500 mt-0.5">Make this course visible to students immediately after creation.</span>
+                </div>
+              </label>
+            </div>
+
+            {/* Thumbnail Upload */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-gray-500" />
+                Course Thumbnail
+              </h2>
+
+              <div className="space-y-4">
+                <div className="aspect-video w-full bg-gray-100 rounded-xl overflow-hidden border border-gray-200 relative">
+                  {thumbnailPreview ? (
+                    <img
+                      src={thumbnailPreview}
+                      alt="Thumbnail preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                      <ImageIcon className="w-10 h-10 mb-2 opacity-50" />
+                      <span className="text-xs">No image selected</span>
+                    </div>
+                  )}
+
+                  {thumbnailPreview && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setThumbnail(null);
+                        setThumbnailPreview(null);
+                      }}
+                      className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-red-500 transition-colors backdrop-blur-sm"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleThumbnailChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  <button type="button" className="w-full py-2.5 px-4 bg-gray-50 text-gray-700 font-medium text-sm rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
+                    <UploadCloud className="w-4 h-4" />
+                    {thumbnail ? "Change Thumbnail" : "Upload Image"}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 text-center">
+                  Recommended size: 1280x720 (16:9)
+                </p>
+              </div>
+            </div>
+
+            {/* Submit Action */}
+            <div className="sticky top-6">
+              {isUploading ? (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-3">
+                  <div className="flex items-center justify-between text-sm font-medium text-gray-900 mb-1">
+                    <span>Uploading Course...</span>
+                    <span>{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-blue-600 h-full rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-center text-gray-500 animate-pulse">
+                    Please do not close this window
+                  </p>
+                </div>
+              ) : (
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-6 rounded-xl font-semibold shadow-lg shadow-blue-600/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
+                >
+                  <CheckCircle2 className="w-5 h-5" />
+                  Create Course
+                </button>
+              )}
+            </div>
+
+          </div>
         </form>
       </div>
     </div>

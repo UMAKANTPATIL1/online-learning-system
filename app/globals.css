@@ -35,3 +35,11 @@ body {
 .perspective {
   perspective: 1000px;
 }
+.slick-slider {
+  display: block !important;
+}
+
+.slick-slide {
+  display: block !important;
+  float: left;
+}

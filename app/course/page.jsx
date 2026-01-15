@@ -43,7 +43,7 @@ const CourseCarousel = () => {
     autoplaySpeed: 3500,
     speed: 700,
     slidesToScroll: 1,
-    slidesToShow: 4,  
+    slidesToShow: 4,
     arrows: true,
     dots: false,
     nextArrow: <NextArrow />,
